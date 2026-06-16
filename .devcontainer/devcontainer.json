@@ -1,0 +1,25 @@
+{
+  // Name, der in VS Code unten links im Container-Badge erscheint.
+  "name": "Kmc.Eversports (PHP)",
+
+  // Basis-Image: offizielles Microsoft-Devcontainer-Image mit PHP + Composer vorinstalliert.
+  // "1-8.2" = Devcontainer-Major 1, PHP 8.2. PHP-Version später an das KMC-Produktiv-WordPress angleichen.
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.2",
+
+  // Hinweis: Die Features "docker-outside-of-docker" + "node" (für wp-env) kommen erst in
+  // Schritt 4 dazu — zusammen mit einem Fix für die kaputte Yarn-apt-Quelle des Basis-Images.
+  // Für Schritt 0–3 reicht das nackte PHP+Composer-Image.
+
+  "customizations": {
+    "vscode": {
+      // Extensions, die VS Code im Container automatisch installiert:
+      "extensions": [
+        "bmewburn.vscode-intelephense-client", // PHP IntelliSense / Navigation / Refactoring
+        "editorconfig.editorconfig"            // einheitliche Formatierung über .editorconfig
+      ]
+    }
+  }
+
+  // Hinweis: "postCreateCommand": "composer install" kommt in Schritt 1,
+  // sobald eine composer.json existiert.
+}
