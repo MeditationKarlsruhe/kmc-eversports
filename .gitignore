@@ -21,7 +21,8 @@ composer.phar
 
 # IDE
 /.idea/
-/.vscode/
+/.vscode/*
+!/.vscode/launch.json
 *.iml
 
 # OS

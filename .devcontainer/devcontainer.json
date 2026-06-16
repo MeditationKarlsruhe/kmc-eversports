@@ -15,7 +15,8 @@
       // Extensions, die VS Code im Container automatisch installiert:
       "extensions": [
         "bmewburn.vscode-intelephense-client", // PHP IntelliSense / Navigation / Refactoring
-        "editorconfig.editorconfig"            // einheitliche Formatierung über .editorconfig
+        "editorconfig.editorconfig",           // einheitliche Formatierung über .editorconfig
+        "xdebug.php-debug"                     // Step-Debugging via Xdebug
       ]
     }
   }
