@@ -1,0 +1,32 @@
+# Secrets — never commit
+.secrets/
+*.key
+*.secret
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Composer
+composer.phar
+
+# Tests / coverage / build
+/build/
+/coverage/
+.phpunit.result.cache
+.phpunit.cache/
+
+# wp-env local overrides
+.wp-env.override.json
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
