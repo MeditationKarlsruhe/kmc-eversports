@@ -1,0 +1,13 @@
+# Normalize all text files to LF in the repo and working tree.
+# The dev container is Linux; consistent LF keeps shell scripts working
+# and snapshot tests deterministic across Windows host and container.
+* text=auto eol=lf
+
+# Binary files: never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
