@@ -16,7 +16,8 @@
       "extensions": [
         "bmewburn.vscode-intelephense-client", // PHP IntelliSense / Navigation / Refactoring
         "editorconfig.editorconfig",           // einheitliche Formatierung über .editorconfig
-        "xdebug.php-debug"                     // Step-Debugging via Xdebug
+        "xdebug.php-debug",                    // Step-Debugging via Xdebug
+        "recca0120.vscode-phpunit"             // Test-Explorer: einzelne Tests per Klick laufen lassen
       ]
     }
   }
