@@ -6,6 +6,7 @@ namespace Kmc\Eversports\Tests\Unit;
 
 use Kmc\Eversports\ActivityParser;
 use Kmc\Eversports\ClassGroup;
+use Kmc\Eversports\MalformedActivitiesResponse;
 use PHPUnit\Framework\TestCase;
 
 final class ActivityParserTest extends TestCase
@@ -26,5 +27,21 @@ final class ActivityParserTest extends TestCase
             ],
             $groups,
         );
+    }
+
+    public function test_it_returns_no_groups_for_an_empty_activity_list(): void
+    {
+        $activityParser = new ActivityParser();
+        $groups = $activityParser->parse('{"data":{"activities":{"nodes":[]}}}');
+
+        self::assertSame([], $groups);
+    }
+
+    public function test_it_throws_on_a_malformed_response(): void
+    {
+        $this->expectException(MalformedActivitiesResponse::class);
+
+        $activityParser = new ActivityParser();
+        $activityParser->parse('{"data":{"activities":{}}}');
     }
 }
