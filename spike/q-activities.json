@@ -1,1 +1,7 @@
-{"query":"query($s:DateInput!,$e:DateInput!){ activities(first:5, timeRange:{start:$s,end:$e}, isCancelled:false, isArchived:false){ nodes{ id start end detailsPageURL name activityGroup{ id name detailsPageURL description{ html plainText } images(first:1){ nodes{ url } } } } } }","variables":{"s":"2026-06-15T00:00:00+02:00","e":"2026-06-29T00:00:00+02:00"}}
+{
+    "query": "query($s:DateInput!,$e:DateInput!){ activities(first:5, timeRange:{start:$s,end:$e}, isCancelled:false, isArchived:false){ nodes{ id start end detailsPageURL name activityGroup{ id name detailsPageURL description{ html plainText } images(first:1){ nodes{ url } } } } } }",
+    "variables": {
+        "s": "2026-06-15T00:00:00+02:00",
+        "e": "2026-06-29T00:00:00+02:00"
+    }
+}

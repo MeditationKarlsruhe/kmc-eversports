@@ -1,1 +1,312 @@
-{"data":{"AG":{"fields":[{"name":"activities","description":"A _paginated_ list of `Activities` of this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"ActivityConnection"}}},{"name":"bookable","description":null,"type":{"kind":"OBJECT","name":"Bookable","ofType":null}},{"name":"color","description":"A color chosen for this `ActivityGroup` to visually group different `Activities` or `ActivityGroups` in a schedule for example.","type":{"kind":"SCALAR","name":"Color","ofType":null}},{"name":"description","description":"A free text describing this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"FormattedText"}}},{"name":"detailsPageURL","description":null,"type":{"kind":"SCALAR","name":"URL","ofType":null}},{"name":"id","description":"The universally unique identifier for this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"ID"}}},{"name":"images","description":"A _paginated_ list of `Images` of this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"ImageConnection"}}},{"name":"limited","description":null,"type":{"kind":"OBJECT","name":"Limited","ofType":null}},{"name":"name","description":"The name of this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"String"}}},{"name":"publicationState","description":"The `PublicationState` of this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"ENUM","name":"PublicationState"}}},{"name":"sport","description":"The `Sport` of this `ActivityGroup`","type":{"kind":"OBJECT","name":"Sport","ofType":null}},{"name":"type","description":"The `ActivityGroupType` chosen for this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"ENUM","name":"ActivityGroupType"}}},{"name":"venue","description":"The `Venue` providing this `ActivityGroup`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"Venue"}}}]},"A":{"fields":[{"name":"activityGroup","description":"The `ActivityGroup` of this `Activity`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"ActivityGroup"}}},{"name":"bookable","description":"Information on _whether_ and _how_ this `Activity` is bookable.\n\n  If this field is `null` this `Activity` is _not_ bookable.\n  This can have multiple reasons:\n  - This `Activity` is not itself an individually _bookable unit_, but just a part of an `ActivityGroup` which has to be booked as a whole.\n  - This `Activity` is _archived_ or _cancelled_\n  - The `PublicationState` of its `ActivityGroup` is not `ACTIVE`\n\n  If this field is _not_ `null` this `Activity` is generally bookable.\n  Note that further restriction like a registration window or a limitation of spots can still apply.","type":{"kind":"OBJECT","name":"Bookable","ofType":null}},{"name":"detailsPageURL","description":null,"type":{"kind":"SCALAR","name":"URL","ofType":null}},{"name":"end","description":"The end of this `Activity` provided in the `DateOutput` format","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"DateOutput"}}},{"name":"hasOnlineStream","description":"Whether this `Activity` has an online stream","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean"}}},{"name":"id","description":"The universally unique identifier for this `Activity`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"ID"}}},{"name":"isArchived","description":"Whether this `Activity` is _archived_.\n  An `Activity` can be _archived_ if the `ActivityGroup` containing it was archived or deleted as a whole or the individual `Activity` itself was deleted.","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean"}}},{"name":"isCancelled","description":"Whether this `Activity` is cancelled","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean"}}},{"name":"limited","description":"Information on _whether_ and _how_ this `Activity` has limited spots for participants.\n\n  If This field is `null` this individual `Activity` is _not_ limited\n  This can have multiple reasons:\n  - This `Activity` is part of an `ActivityGroup` which is limited as a whole, like a _Course_\n  - This `Activity` allows for unlimited participants, like e.g. an online class\n\n  If this field is _not_ `null` this `Activity` has a limited number of spots for participants.\n  This can be the case for individually bookable `Activities` of e.g. a _Class_ or also for the `Activities` in an `ActivityGroup` like e.g. a _Workshop_ using [Tickets](https://help.eversportsmanager.com/ticket-system-for-workshops-courses-and-events-eversports-help-center).","type":{"kind":"OBJECT","name":"Limited","ofType":null}},{"name":"location","description":"The physical location at which this `Activity` will happen.\n\n  Note that e.g. a _Class_ \"Yoga in the Park\" might happen at a location different from the `Location` of the `Venue`.","type":{"kind":"OBJECT","name":"Location","ofType":null}},{"name":"name","description":"A name for this specific `Activity`.\n    Note that not all `Activities` have a specific name. If the name is `null` you can infer its name from the name of the `ActivityGroup`.\n\n    E.g. an `ActivityGroup` called “Morning Yoga” might have `Activities` without specific names, all `Activities` are generic “Morning Yoga” `Activities`.\n    But an `ActivityGroup` called “Beginners Course” might contain `Activities` individually named “Week 1 - Basics”, “Week 2 - Breathing”,… ","type":{"kind":"SCALAR","name":"String","ofType":null}},{"name":"participations","description":"The participations for this `Activity`","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"ParticipationConnection"}}},{"name":"room","description":"The `Room` this `Activity` happens in","type":{"kind":"OBJECT","name":"Room","ofType":null}},{"name":"start","description":"The start of this `Activity` provided in the `DateOutput` format","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"DateOutput"}}},{"name":"teacher","description":"The `Teacher` teaching this `Activity`","type":{"kind":"OBJECT","name":"Teacher","ofType":null}}]}}}
+{
+    "data": {
+        "AG": {
+            "fields": [
+                {
+                    "name": "activities",
+                    "description": "A _paginated_ list of `Activities` of this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "ActivityConnection"
+                        }
+                    }
+                },
+                {
+                    "name": "bookable",
+                    "description": null,
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Bookable",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "color",
+                    "description": "A color chosen for this `ActivityGroup` to visually group different `Activities` or `ActivityGroups` in a schedule for example.",
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Color",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "description": "A free text describing this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "FormattedText"
+                        }
+                    }
+                },
+                {
+                    "name": "detailsPageURL",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "URL",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "id",
+                    "description": "The universally unique identifier for this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "ID"
+                        }
+                    }
+                },
+                {
+                    "name": "images",
+                    "description": "A _paginated_ list of `Images` of this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "ImageConnection"
+                        }
+                    }
+                },
+                {
+                    "name": "limited",
+                    "description": null,
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Limited",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "name",
+                    "description": "The name of this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String"
+                        }
+                    }
+                },
+                {
+                    "name": "publicationState",
+                    "description": "The `PublicationState` of this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "ENUM",
+                            "name": "PublicationState"
+                        }
+                    }
+                },
+                {
+                    "name": "sport",
+                    "description": "The `Sport` of this `ActivityGroup`",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Sport",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "type",
+                    "description": "The `ActivityGroupType` chosen for this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "ENUM",
+                            "name": "ActivityGroupType"
+                        }
+                    }
+                },
+                {
+                    "name": "venue",
+                    "description": "The `Venue` providing this `ActivityGroup`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "Venue"
+                        }
+                    }
+                }
+            ]
+        },
+        "A": {
+            "fields": [
+                {
+                    "name": "activityGroup",
+                    "description": "The `ActivityGroup` of this `Activity`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "ActivityGroup"
+                        }
+                    }
+                },
+                {
+                    "name": "bookable",
+                    "description": "Information on _whether_ and _how_ this `Activity` is bookable.\n\n  If this field is `null` this `Activity` is _not_ bookable.\n  This can have multiple reasons:\n  - This `Activity` is not itself an individually _bookable unit_, but just a part of an `ActivityGroup` which has to be booked as a whole.\n  - This `Activity` is _archived_ or _cancelled_\n  - The `PublicationState` of its `ActivityGroup` is not `ACTIVE`\n\n  If this field is _not_ `null` this `Activity` is generally bookable.\n  Note that further restriction like a registration window or a limitation of spots can still apply.",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Bookable",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "detailsPageURL",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "URL",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "end",
+                    "description": "The end of this `Activity` provided in the `DateOutput` format",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "DateOutput"
+                        }
+                    }
+                },
+                {
+                    "name": "hasOnlineStream",
+                    "description": "Whether this `Activity` has an online stream",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Boolean"
+                        }
+                    }
+                },
+                {
+                    "name": "id",
+                    "description": "The universally unique identifier for this `Activity`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "ID"
+                        }
+                    }
+                },
+                {
+                    "name": "isArchived",
+                    "description": "Whether this `Activity` is _archived_.\n  An `Activity` can be _archived_ if the `ActivityGroup` containing it was archived or deleted as a whole or the individual `Activity` itself was deleted.",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Boolean"
+                        }
+                    }
+                },
+                {
+                    "name": "isCancelled",
+                    "description": "Whether this `Activity` is cancelled",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Boolean"
+                        }
+                    }
+                },
+                {
+                    "name": "limited",
+                    "description": "Information on _whether_ and _how_ this `Activity` has limited spots for participants.\n\n  If This field is `null` this individual `Activity` is _not_ limited\n  This can have multiple reasons:\n  - This `Activity` is part of an `ActivityGroup` which is limited as a whole, like a _Course_\n  - This `Activity` allows for unlimited participants, like e.g. an online class\n\n  If this field is _not_ `null` this `Activity` has a limited number of spots for participants.\n  This can be the case for individually bookable `Activities` of e.g. a _Class_ or also for the `Activities` in an `ActivityGroup` like e.g. a _Workshop_ using [Tickets](https://help.eversportsmanager.com/ticket-system-for-workshops-courses-and-events-eversports-help-center).",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Limited",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "location",
+                    "description": "The physical location at which this `Activity` will happen.\n\n  Note that e.g. a _Class_ \"Yoga in the Park\" might happen at a location different from the `Location` of the `Venue`.",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Location",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "name",
+                    "description": "A name for this specific `Activity`.\n    Note that not all `Activities` have a specific name. If the name is `null` you can infer its name from the name of the `ActivityGroup`.\n\n    E.g. an `ActivityGroup` called “Morning Yoga” might have `Activities` without specific names, all `Activities` are generic “Morning Yoga” `Activities`.\n    But an `ActivityGroup` called “Beginners Course” might contain `Activities` individually named “Week 1 - Basics”, “Week 2 - Breathing”,… ",
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "participations",
+                    "description": "The participations for this `Activity`",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "ParticipationConnection"
+                        }
+                    }
+                },
+                {
+                    "name": "room",
+                    "description": "The `Room` this `Activity` happens in",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Room",
+                        "ofType": null
+                    }
+                },
+                {
+                    "name": "start",
+                    "description": "The start of this `Activity` provided in the `DateOutput` format",
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "DateOutput"
+                        }
+                    }
+                },
+                {
+                    "name": "teacher",
+                    "description": "The `Teacher` teaching this `Activity`",
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "Teacher",
+                        "ofType": null
+                    }
+                }
+            ]
+        }
+    }
+}
