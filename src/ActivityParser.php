@@ -9,6 +9,12 @@ final class ActivityParser
     /** @return list<ClassGroup> */
     public function parse(string $activitiesJson): array
     {
+        return $this->toClassGroups($this->decodeGroups($activitiesJson));
+    }
+
+    /** @return list<array{id: string, name: string}> */
+    private function decodeGroups(string $activitiesJson): array
+    {
         $data = json_decode($activitiesJson, true, 512, JSON_THROW_ON_ERROR);
 
         if (!is_array($data)) {
@@ -47,9 +53,23 @@ final class ActivityParser
                 throw new MalformedActivitiesResponse('activityGroup.id and activityGroup.name must be strings.');
             }
 
-            $groups[$id] ??= new ClassGroup($id, $name);
+            $groups[] = ['id' => $id, 'name' => $name];
         }
 
-        return array_values($groups);
+        return $groups;
+    }
+
+    /**
+     * @param  list<array{id: string, name: string}> $groups
+     * @return list<ClassGroup>
+     */
+    private function toClassGroups(array $groups): array
+    {
+        $unique = [];
+        foreach ($groups as $group) {
+            $unique[$group['id']] ??= new ClassGroup($group['id'], $group['name']);
+        }
+
+        return array_values($unique);
     }
 }
