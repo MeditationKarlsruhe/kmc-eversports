@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ActivityParserTest extends TestCase
 {
-    public function test_it_extracts_unique_class_groups_from_the_graphql_response(): void
+    public function testItExtractsUniqueClassGroupsFromTheResponse(): void
     {
         $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
         self::assertNotFalse($json);
@@ -29,7 +29,7 @@ final class ActivityParserTest extends TestCase
         );
     }
 
-    public function test_it_returns_no_groups_for_an_empty_activity_list(): void
+    public function testItReturnsNoGroupsForAnEmptyActivityList(): void
     {
         $activityParser = new ActivityParser();
         $groups = $activityParser->parse('{"data":{"activities":{"nodes":[]}}}');
@@ -37,7 +37,7 @@ final class ActivityParserTest extends TestCase
         self::assertSame([], $groups);
     }
 
-    public function test_it_throws_on_a_malformed_response(): void
+    public function testItThrowsOnAMalformedResponse(): void
     {
         $this->expectException(MalformedActivitiesResponse::class);
 
