@@ -1,0 +1,7 @@
+{
+    "intelephense.format.enable": false,
+    "editor.formatOnSave": true,
+    "[php]": {
+        "editor.defaultFormatter": "ValeryanM.vscode-phpsab"
+    }
+}
