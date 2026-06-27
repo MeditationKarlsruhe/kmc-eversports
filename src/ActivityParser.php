@@ -9,7 +9,8 @@ final class ActivityParser
     /** @return list<ClassGroup> */
     public function parse(string $activitiesJson): array
     {
-        return $this->toClassGroups($this->decodeNodes($activitiesJson));
+        $nodes = $this->decodeNodes($activitiesJson);
+        return $this->toClassGroups($nodes);
     }
 
     /**
@@ -74,9 +75,9 @@ final class ActivityParser
 
             $images = $group['images'] ?? null;
             $imageNodes = is_array($images) ? ($images['nodes'] ?? []) : [];
-            $firstImage = is_array($imageNodes) && count($imageNodes) > 0 ? $imageNodes[0] : null;
-            $imageUrl = is_array($firstImage) && isset($firstImage['url']) && is_string($firstImage['url'])
-                ? $firstImage['url']
+            $firstNode = is_array($imageNodes) ? ($imageNodes[0] ?? null) : null;
+            $imageUrl = is_array($firstNode) && isset($firstNode['url']) && is_string($firstNode['url'])
+                ? $firstNode['url']
                 : null;
 
             $appointmentStart = $node['start'] ?? null;
@@ -114,38 +115,26 @@ final class ActivityParser
      */
     private function toClassGroups(array $nodes): array
     {
-        /** @var array<string, ClassGroup> $groups */
-        $groups = [];
+        /** @var array<string, array{0: string, 1: string, 2: ?string}> $meta */
+        $meta = [];
+        /** @var array<string, list<Appointment>> $appointments */
+        $appointments = [];
 
         foreach ($nodes as $node) {
             $id = $node['groupId'];
-
-            $appointment = new Appointment(
+            $meta[$id] ??= [$node['groupName'], $node['descriptionHtml'], $node['imageUrl']];
+            $appointments[$id][] = new Appointment(
                 new \DateTimeImmutable($node['appointmentStart']),
                 new \DateTimeImmutable($node['appointmentEnd']),
                 $node['registrationLink'],
             );
-
-            if (!isset($groups[$id])) {
-                $groups[$id] = new ClassGroup(
-                    $id,
-                    $node['groupName'],
-                    $node['descriptionHtml'],
-                    $node['imageUrl'],
-                    [$appointment],
-                );
-            } else {
-                $existing = $groups[$id];
-                $groups[$id] = new ClassGroup(
-                    $existing->id,
-                    $existing->title,
-                    $existing->descriptionHtml,
-                    $existing->imageUrl,
-                    [...$existing->appointments, $appointment],
-                );
-            }
         }
 
-        return array_values($groups);
+        $groups = [];
+        foreach ($meta as $id => [$name, $description, $imageUrl]) {
+            $groups[] = new ClassGroup($id, $name, $description, $imageUrl, $appointments[$id]);
+        }
+
+        return $groups;
     }
 }
