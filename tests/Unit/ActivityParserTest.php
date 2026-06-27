@@ -6,57 +6,24 @@ namespace Kmc\Eversports\Tests\Unit;
 
 use Kmc\Eversports\ActivityParser;
 use Kmc\Eversports\Appointment;
+use Kmc\Eversports\ClassGroup;
 use Kmc\Eversports\MalformedActivitiesResponse;
 use PHPUnit\Framework\TestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 final class ActivityParserTest extends TestCase
 {
-    public function testItExtractsThreeUniqueGroupsFromTheFixture(): void
+    use MatchesSnapshots;
+
+    public function testItParsesTheFixtureCorrectly(): void
     {
         $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
         self::assertNotFalse($json);
 
-        $groups = (new ActivityParser())->parse($json);
+        $parser = new ActivityParser();
+        $groups = $parser->parse($json);
 
-        self::assertCount(3, $groups);
-        self::assertSame('1cd940d5-2585-432c-bbd8-fc556159b421', $groups[0]->id);
-        self::assertSame('Grundlagenprogramm', $groups[0]->title);
-        self::assertSame('33555851-d287-4224-aab7-9350b367661b', $groups[1]->id);
-        self::assertSame('Herzjuwel mit Lamrim-Meditation', $groups[1]->title);
-        self::assertSame('f3991596-7670-46af-9168-8fb03a8d9d4c', $groups[2]->id);
-        self::assertSame('Meditation & moderner Buddhismus', $groups[2]->title);
-    }
-
-    public function testItCollectsAppointmentsPerGroup(): void
-    {
-        $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
-        self::assertNotFalse($json);
-
-        $groups = (new ActivityParser())->parse($json);
-
-        // Grundlagenprogramm has 2 activities in the fixture
-        self::assertCount(2, $groups[0]->appointments);
-        // Herzjuwel has 2 activities
-        self::assertCount(2, $groups[1]->appointments);
-        // Meditation & moderner Buddhismus has 1 activity
-        self::assertCount(1, $groups[2]->appointments);
-    }
-
-    public function testItParsesAppointmentFieldsCorrectly(): void
-    {
-        $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
-        self::assertNotFalse($json);
-
-        $groups = (new ActivityParser())->parse($json);
-
-        $first = $groups[0]->appointments[0];
-        self::assertInstanceOf(Appointment::class, $first);
-        self::assertEquals(new \DateTimeImmutable('2026-06-15T18:00:00+02:00'), $first->start);
-        self::assertEquals(new \DateTimeImmutable('2026-06-15T20:00:00+02:00'), $first->end);
-        self::assertSame(
-            'https://www.eversports.de/org/activity/993f80f6-632b-4fed-a248-2ddcddcf92d5',
-            $first->registrationLink,
-        );
+        $this->assertMatchesJsonSnapshot($this->groupsToArray($groups));
     }
 
     public function testItSetsImageUrlFromFirstImage(): void
@@ -64,7 +31,8 @@ final class ActivityParserTest extends TestCase
         $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
         self::assertNotFalse($json);
 
-        $groups = (new ActivityParser())->parse($json);
+        $parser = new ActivityParser();
+        $groups = $parser->parse($json);
 
         $expectedUrl = 'https://files.eversports.com/f79b7bdb-1c2d-45ae-a60d-ceb5423ed045/'
             . 'eversports__bild-prasentation-43-11png-original.png';
@@ -93,14 +61,16 @@ final class ActivityParserTest extends TestCase
         ]);
         self::assertIsString($json);
 
-        $groups = (new ActivityParser())->parse($json);
+        $parser = new ActivityParser();
+        $groups = $parser->parse($json);
 
         self::assertNull($groups[0]->imageUrl);
     }
 
     public function testItReturnsNoGroupsForAnEmptyActivityList(): void
     {
-        $groups = (new ActivityParser())->parse('{"data":{"activities":{"nodes":[]}}}');
+        $parser = new ActivityParser();
+        $groups = $parser->parse('{"data":{"activities":{"nodes":[]}}}');
 
         self::assertSame([], $groups);
     }
@@ -109,6 +79,28 @@ final class ActivityParserTest extends TestCase
     {
         $this->expectException(MalformedActivitiesResponse::class);
 
-        (new ActivityParser())->parse('{"data":{"activities":{}}}');
+        $parser = new ActivityParser();
+        $parser->parse('{"data":{"activities":{}}}');
+    }
+
+    /**
+     * @param  list<ClassGroup> $groups
+     * @return list<array{id: string, title: string, descriptionHtml: string, imageUrl: ?string, appointments: list<array{start: string, end: string, registrationLink: string}>}>
+     */
+    private function groupsToArray(array $groups): array
+    {
+        return array_map(function (ClassGroup $group): array {
+            return [
+                'id' => $group->id,
+                'title' => $group->title,
+                'descriptionHtml' => $group->descriptionHtml,
+                'imageUrl' => $group->imageUrl,
+                'appointments' => array_map(fn (Appointment $appt): array => [
+                    'start' => $appt->start->format('c'),
+                    'end' => $appt->end->format('c'),
+                    'registrationLink' => $appt->registrationLink,
+                ], $group->appointments),
+            ];
+        }, $groups);
     }
 }
