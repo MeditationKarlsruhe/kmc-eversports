@@ -49,7 +49,7 @@ final class EversportsClient
             $pageBody = $this->request($groupIds, $after);
             $page = json_decode($pageBody, true);
             if (!is_array($page)) {
-                throw new EversportsApiException('Failed to decode API response.');
+                throw new \RuntimeException('Failed to decode API response.');
             }
             $data = is_array($page['data'] ?? null) ? $page['data'] : [];
             $activ = is_array($data['activities'] ?? null) ? $data['activities'] : [];
@@ -98,12 +98,12 @@ final class EversportsClient
         ]);
 
         if (is_wp_error($response)) {
-            throw new EversportsApiException($response->get_error_message());
+            throw new \RuntimeException($response->get_error_message());
         }
 
         $statusCode = wp_remote_retrieve_response_code($response);
         if ($statusCode !== 200) {
-            throw new EversportsApiException("Eversports API returned HTTP {$statusCode}.");
+            throw new \RuntimeException("Eversports API returned HTTP {$statusCode}.");
         }
 
         $responseBody = wp_remote_retrieve_body($response);
@@ -111,7 +111,7 @@ final class EversportsClient
         $errors = is_array($decoded) ? ($decoded['errors'] ?? null) : null;
         if (is_array($errors)) {
             $messages = array_filter(array_column($errors, 'message'), 'is_string');
-            throw new EversportsApiException('GraphQL errors: ' . implode('; ', $messages));
+            throw new \RuntimeException('GraphQL errors: ' . implode('; ', $messages));
         }
 
         return $responseBody;
@@ -121,7 +121,7 @@ final class EversportsClient
     {
         $token = file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
         if ($token === false) {
-            throw new EversportsApiException('.secrets/eversports-api.txt is missing.');
+            throw new \RuntimeException('.secrets/eversports-api.txt is missing.');
         }
         return $token;
     }
