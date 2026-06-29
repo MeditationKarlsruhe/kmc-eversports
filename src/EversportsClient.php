@@ -34,39 +34,54 @@ final class EversportsClient
     /** @param list<string> $groupIds */
     public function fetchActivities(array $groupIds): string
     {
-        $sortedIds = $groupIds;
-        sort($sortedIds);
-        $cacheKey = 'eversports_' . md5(implode(',', $sortedIds));
-
-        $cached = get_transient($cacheKey);
+        $key = $this->cacheKey($groupIds);
+        $cached = get_transient($key);
         if (is_string($cached)) {
             return $cached;
         }
+        $nodes = $this->fetchAllNodes($groupIds);
+        $json = json_encode(
+            ['data' => ['activities' => ['nodes' => $nodes]]],
+            JSON_THROW_ON_ERROR,
+        );
+        set_transient($key, $json, HOUR_IN_SECONDS);
+        return $json;
+    }
 
+    /** @param list<string> $groupIds */
+    private function cacheKey(array $groupIds): string
+    {
+        $sorted = $groupIds;
+        sort($sorted);
+        return 'eversports_' . md5(implode(',', $sorted));
+    }
+
+    /**
+     * @param  list<string> $groupIds
+     * @return list<mixed>
+     */
+    private function fetchAllNodes(array $groupIds): array
+    {
         $allNodes = [];
         $after = null;
         do {
-            $pageBody = $this->request($groupIds, $after);
-            $page = json_decode($pageBody, true);
-            if (!is_array($page)) {
-                throw new \RuntimeException('Failed to decode API response.');
-            }
-            $data = is_array($page['data'] ?? null) ? $page['data'] : [];
-            $activ = is_array($data['activities'] ?? null) ? $data['activities'] : [];
-            $nodes = is_array($activ['nodes'] ?? null) ? $activ['nodes'] : [];
-            $allNodes = array_merge($allNodes, $nodes);
-            $pageInfo = is_array($activ['pageInfo'] ?? null) ? $activ['pageInfo'] : [];
-            $hasNextPage = ($pageInfo['hasNextPage'] ?? false) === true;
-            $after = is_string($pageInfo['endCursor'] ?? null) ? $pageInfo['endCursor'] : null;
+            /**
+             * @var array{
+             *     data: array{
+             *         activities: array{
+             *             pageInfo: array{hasNextPage: bool, endCursor: string|null},
+             *             nodes: list<mixed>
+             *         }
+             *     }
+             * } $page
+             */
+            $page = json_decode($this->request($groupIds, $after), true);
+            $activ = $page['data']['activities'];
+            $allNodes = array_merge($allNodes, $activ['nodes']);
+            $hasNextPage = $activ['pageInfo']['hasNextPage'];
+            $after = $activ['pageInfo']['endCursor'];
         } while ($hasNextPage && $after !== null);
-
-        $json = json_encode(
-            ['data' => ['activities' => ['nodes' => $allNodes]]],
-            JSON_THROW_ON_ERROR,
-        );
-
-        set_transient($cacheKey, $json, HOUR_IN_SECONDS);
-        return $json;
+        return $allNodes;
     }
 
     /** @param list<string> $groupIds */
