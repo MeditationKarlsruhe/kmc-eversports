@@ -13,17 +13,7 @@ final class ActivityParser
         return $this->toClassGroups($nodes);
     }
 
-    /**
-     * @return list<array{
-     *     groupId: string,
-     *     groupName: string,
-     *     descriptionHtml: string,
-     *     imageUrl: ?string,
-     *     appointmentStart: string,
-     *     appointmentEnd: string,
-     *     registrationLink: string,
-     * }>
-     */
+    /** @return list<ActivityNode> */
     private function decodeNodes(string $activitiesJson): array
     {
         $data = json_decode($activitiesJson, true, 512, JSON_THROW_ON_ERROR);
@@ -87,30 +77,22 @@ final class ActivityParser
                 throw new MalformedActivitiesResponse('Activity start, end, and detailsPageURL must be strings.');
             }
 
-            $result[] = [
-                'groupId' => $groupId,
-                'groupName' => $groupName,
-                'descriptionHtml' => $descriptionHtml,
-                'imageUrl' => $imageUrl,
-                'appointmentStart' => $appointmentStart,
-                'appointmentEnd' => $appointmentEnd,
-                'registrationLink' => $registrationLink,
-            ];
+            $result[] = new ActivityNode(
+                $groupId,
+                $groupName,
+                $descriptionHtml,
+                $imageUrl,
+                $appointmentStart,
+                $appointmentEnd,
+                $registrationLink,
+            );
         }
 
         return $result;
     }
 
     /**
-     * @param  list<array{
-     *     groupId: string,
-     *     groupName: string,
-     *     descriptionHtml: string,
-     *     imageUrl: ?string,
-     *     appointmentStart: string,
-     *     appointmentEnd: string,
-     *     registrationLink: string,
-     * }> $nodes
+     * @param  list<ActivityNode> $nodes
      * @return list<ClassGroup>
      */
     private function toClassGroups(array $nodes): array
@@ -121,12 +103,12 @@ final class ActivityParser
         $appointments = [];
 
         foreach ($nodes as $node) {
-            $id = $node['groupId'];
-            $meta[$id] ??= [$node['groupName'], $node['descriptionHtml'], $node['imageUrl']];
+            $id = $node->groupId;
+            $meta[$id] ??= [$node->groupName, $node->descriptionHtml, $node->imageUrl];
             $appointments[$id][] = new Appointment(
-                new \DateTimeImmutable($node['appointmentStart']),
-                new \DateTimeImmutable($node['appointmentEnd']),
-                $node['registrationLink'],
+                new \DateTimeImmutable($node->appointmentStart),
+                new \DateTimeImmutable($node->appointmentEnd),
+                $node->registrationLink,
             );
         }
 
