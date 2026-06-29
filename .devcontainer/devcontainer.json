@@ -19,7 +19,19 @@
         "xdebug.php-debug",                    // Step-Debugging via Xdebug
         "recca0120.vscode-phpunit",            // Test-Explorer: einzelne Tests per Klick laufen lassen
         "ValeryanM.vscode-phpsab"              // phpcs/phpcbf: PSR-12-Squiggles + Format-on-Save über phpcs.xml.dist
-      ]
+      ],
+      "settings": {
+        "intelephense.stubs": [
+          "apache", "bcmath", "bz2", "calendar", "Core", "ctype", "curl",
+          "date", "dom", "exif", "fileinfo", "filter", "gd", "hash",
+          "iconv", "intl", "json", "mbstring", "meta", "mysqli", "openssl",
+          "pcntl", "pcre", "PDO", "pdo_mysql", "pdo_sqlite", "Phar",
+          "posix", "readline", "Reflection", "session", "SimpleXML",
+          "sodium", "SPL", "sqlite3", "standard", "tokenizer", "xml",
+          "xmlreader", "xmlwriter", "zip", "zlib",
+          "wordpress"
+        ]
+      }
     }
   }
 
