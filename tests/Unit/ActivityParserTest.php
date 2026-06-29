@@ -85,7 +85,13 @@ final class ActivityParserTest extends TestCase
 
     /**
      * @param  list<ClassGroup> $groups
-     * @return list<array{id: string, title: string, descriptionHtml: string, imageUrl: ?string, appointments: list<array{start: string, end: string, registrationLink: string}>}>
+     * @return list<array{
+     *     id: string,
+     *     title: string,
+     *     descriptionHtml: string,
+     *     imageUrl: ?string,
+     *     appointments: list<array{start: string, end: string, registrationLink: string}>,
+     * }>
      */
     private function groupsToArray(array $groups): array
     {
