@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "start": "wp-now start"
+        "start": "wp-now start --php=8.2"
     },
     "devDependencies": {
         "@wp-now/wp-now": "*"
