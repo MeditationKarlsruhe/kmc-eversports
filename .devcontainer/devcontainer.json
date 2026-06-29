@@ -11,11 +11,9 @@
   "runArgs": ["--privileged"],
 
   "features": {
-    // Node via nvm — umgeht die kaputte Yarn-apt-Quelle des Basis-Images.
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
     },
-    // Docker-in-Docker: voller Docker-Daemon im Container — wp-env kann /workspaces/... mounten.
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 

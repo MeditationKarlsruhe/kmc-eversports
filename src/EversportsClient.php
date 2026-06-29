@@ -119,21 +119,10 @@ final class EversportsClient
 
     private function bearerToken(): string
     {
-        if (defined('EVERSPORTS_BEARER_TOKEN')) {
-            $token = constant('EVERSPORTS_BEARER_TOKEN');
-            if (!is_string($token)) {
-                throw new EversportsApiException('EVERSPORTS_BEARER_TOKEN must be a string.');
-            }
-            return $token;
+        $token = file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
+        if ($token === false) {
+            throw new EversportsApiException('.secrets/eversports-api.txt is missing.');
         }
-
-        $secretFile = dirname(__DIR__) . '/.secrets/eversports-api.txt';
-        if (file_exists($secretFile)) {
-            return trim((string) file_get_contents($secretFile));
-        }
-
-        throw new EversportsApiException(
-            'EVERSPORTS_BEARER_TOKEN is not defined and .secrets/eversports-api.txt does not exist.',
-        );
+        return $token;
     }
 }
