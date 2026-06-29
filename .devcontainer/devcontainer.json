@@ -6,9 +6,14 @@
   // "1-8.2" = Devcontainer-Major 1, PHP 8.2. PHP-Version später an das KMC-Produktiv-WordPress angleichen.
   "image": "mcr.microsoft.com/devcontainers/php:1-8.2",
 
-  // Hinweis: Die Features "docker-outside-of-docker" + "node" (für wp-env) kommen erst in
-  // Schritt 4 dazu — zusammen mit einem Fix für die kaputte Yarn-apt-Quelle des Basis-Images.
-  // Für Schritt 0–3 reicht das nackte PHP+Composer-Image.
+  "features": {
+    // Node via nvm — umgeht die kaputte Yarn-apt-Quelle des Basis-Images.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+
+  "postCreateCommand": "composer install && npm install",
 
   "customizations": {
     "vscode": {

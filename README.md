@@ -4,12 +4,10 @@ WordPress-Plugin, das den **Kursplan des Kadampa Meditationszentrums Karlsruhe**
 [Eversports](https://www.eversports.de/) auf der KMC-Website anzeigt. Es ruft dazu die
 **offizielle Eversports-GraphQL-API** auf, gruppiert die Kurse und rendert sie.
 
-> **Hinweis zum Stand:** Das Projekt wird gerade neu aufgebaut und ist **noch kein
-> fertiges, installierbares Plugin**. Aktuell existiert der getestete *Kern* (das
-> Einlesen der API-Daten in typisierte Objekte) samt kompletter Entwicklungs- und
-> Test-Umgebung. Die eigentlichen WordPress-Teile (Plugin-Datei, Shortcode, HTML-Ausgabe,
-> Caching, Admin-Einstellungen, der Live-Aufruf der API) sind **noch nicht gebaut** —
-> siehe [Roadmap](#roadmap).
+> **Hinweis zum Stand:** Das Projekt wird gerade neu aufgebaut und ist **noch nicht
+> produktionsreif**. Plugin-Datei und Shortcode existieren, zeigen aber noch einen
+> Platzhalter statt echter Kursdaten. Der Live-Aufruf der API, das HTML-Template und
+> Caching sind noch nicht gebaut — siehe [Roadmap](#roadmap).
 
 ---
 
@@ -56,14 +54,8 @@ für die Versionsverwaltung.
 2. VS Code erkennt die Container-Definition und schlägt unten rechts **„Reopen in
    Container"** vor — anklicken. (Alternativ: `F1` → *„Dev Containers: Reopen in
    Container"*.) Beim ersten Mal lädt Docker das Image und baut den Container; das dauert
-   ein paar Minuten.
-3. Sobald VS Code „im Container" ist (grünes Feld unten links), öffnet sich ein Terminal,
-   in dem PHP und Composer fertig installiert sind. Die Projekt-Abhängigkeiten werden
-   automatisch installiert; falls nicht, einmalig:
-   ```bash
-   composer install
-   ```
-4. Prüfen, dass alles läuft:
+   ein paar Minuten. `composer install` und `npm install` laufen dabei automatisch.
+3. Prüfen, dass alles läuft:
    ```bash
    composer test    # Tests
    composer stan    # statische Analyse
@@ -71,8 +63,8 @@ für die Versionsverwaltung.
    ```
    Alle drei sollten ohne Fehler durchlaufen.
 
-> **Wichtig:** Alle `composer`-Befehle laufen **im Container-Terminal** von VS Code, nicht
-> in einem normalen Windows-Terminal.
+> **Wichtig:** Alle Befehle laufen **im Container-Terminal** von VS Code, nicht in einem
+> normalen Windows-Terminal.
 
 ## API-Zugang (Geheimnis)
 
@@ -99,6 +91,28 @@ Geheimnis und gehört **niemals ins Repository**.
 | `composer stan` | statische Code-Analyse (PHPStan, schärfste Stufe) |
 | `composer cs` | prüft den Coding-Standard (PSR-12) |
 | `composer cs:fix` | korrigiert Formatierungs-Verstöße automatisch |
+| `npm start` | startet WordPress lokal (Port 8881, siehe unten) |
+
+### WordPress lokal starten
+
+```bash
+npm start
+```
+
+VS Code zeigt eine Benachrichtigung „Port 8881 is available" — darüber den Browser öffnen.
+WordPress-Admin ist unter `/wp-admin` erreichbar (Benutzername: `admin`, Passwort: `password`).
+
+Ablauf beim ersten Start:
+1. Plugin „KMC Eversports" unter *Plugins* aktivieren.
+2. Eine neue Seite anlegen, `[eversports-events]` in den Inhalt schreiben, Seite aufrufen.
+
+wp-now speichert Datenbank und Uploads unter `~/.wp-now/` im Container. Ein `npm start`
+lädt denselben Stand wieder — die Plugin-Aktivierung bleibt erhalten, solange der
+Container nur gestoppt und neu gestartet wird.
+
+> **Nach einem Container-Rebuild** (`Dev Containers: Rebuild Container`) wird das
+> Container-Dateisystem zurückgesetzt und `~/.wp-now/` ist weg. Die Schritte 1 und 2
+> oben müssen dann einmalig wiederholt werden.
 
 **Einzelne Tests / Debugging in VS Code:**
 - Im **Test-Explorer** (Becherglas-Symbol links) lässt sich jeder Test per Klick starten
@@ -108,18 +122,22 @@ Geheimnis und gehört **niemals ins Repository**.
 ## Projektstruktur
 
 ```
+kmc-eversports.php           WordPress-Plugin-Entry (Plugin-Header, Shortcode-Registrierung)
 src/                         Der Code des Projekts (Domäne)
   ActivityParser.php           Liest die API-Antwort und baut Kursgruppen (validiert streng)
-  ClassGroup.php               Eine Kursgruppe (Wert-Objekt: ID + Titel)
+  ActivityNode.php             Zwischen-Typ: eine flache Zeile aus der API-Antwort
+  Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
+  ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
   MalformedActivitiesResponse.php  Fehler, wenn die API-Antwort nicht das erwartete Format hat
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten
   FINDINGS.md                  Was beim API-Test herauskam (Schema, Felder, Entscheidungen)
   sample-activities.json       Echte API-Antwort — dient als Test-Vorlage (Fixture)
-.devcontainer/               Definition der Entwicklungsumgebung (PHP, Werkzeuge)
+.devcontainer/               Definition der Entwicklungsumgebung (PHP + Node, Werkzeuge)
 .vscode/                     Editor-Einstellungen (Debugging, Format-on-Save)
-composer.json                Abhängigkeiten + Befehls-Kürzel (test/stan/cs)
+composer.json                PHP-Abhängigkeiten + Befehls-Kürzel (test/stan/cs)
+package.json                 Node-Abhängigkeiten + Befehls-Kürzel (start)
 phpunit.xml.dist             Test-Konfiguration
 phpstan.neon                 Konfiguration der statischen Analyse
 phpcs.xml.dist               Coding-Standard (PSR-12)
@@ -158,14 +176,12 @@ Der Code folgt „Clean Development". Wer hier weiterbaut, sollte sich daran hal
 
 ## Roadmap
 
-Bereits vorhanden: Dev-Umgebung, der getestete API-Parser (Kursgruppen), die Qualitäts-Gates
-(Tests, statische Analyse, Coding-Standard).
+Bereits vorhanden: Dev-Umgebung (PHP + Node), der getestete API-Parser (Kursgruppen mit
+Terminen, Beschreibung, Bild), Plugin-Entry-Datei mit Platzhalter-Shortcode, lokales
+WordPress via wp-now, Qualitäts-Gates (Tests, statische Analyse, Coding-Standard).
 
 Noch offen:
-1. **Live-Anbindung & vollständige Daten** – Kursgruppen um Termine, Anmeldelink und Bild
-   erweitern; echten API-Aufruf einbauen.
-2. **WordPress-Integration** – Plugin-Datei, Shortcode `[eversports-events …]`,
-   HTML-Template, Caching, Admin-Einstellungen.
-3. **Tests gegen echtes WordPress** (wp-env) inkl. Snapshot-Tests der gerenderten Ausgabe.
-4. **CI** (GitHub Actions): Tests/Analyse/Standard laufen automatisch bei jedem Push.
-5. **Umstellung („Cutover")** – altes Plugin + Scraper + Azure-Funktion ablösen.
+1. **Live-Anbindung** – `EversportsClient` (echter API-Aufruf), Shortcode gibt echte Daten aus.
+2. **HTML-Template + CSS** – gestaltete Ausgabe statt rohem Dump.
+3. **CI** (GitHub Actions): Tests/Analyse/Standard laufen automatisch bei jedem Push.
+4. **Umstellung („Cutover")** – altes Plugin + Scraper + Azure-Funktion ablösen.
