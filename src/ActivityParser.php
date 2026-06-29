@@ -78,10 +78,10 @@ final class ActivityParser
 
             $appointmentStart = $node['start'] ?? null;
             $appointmentEnd = $node['end'] ?? null;
-            $registrationLink = $node['detailsPageURL'] ?? null;
-            if (!is_string($appointmentStart) || !is_string($appointmentEnd) || !is_string($registrationLink)) {
-                throw new MalformedActivitiesResponse('Activity start, end, and detailsPageURL must be strings.');
+            if (!is_string($appointmentStart) || !is_string($appointmentEnd)) {
+                throw new MalformedActivitiesResponse('Activity start and end must be strings.');
             }
+            $registrationLink = is_string($node['detailsPageURL'] ?? null) ? $node['detailsPageURL'] : null;
 
             $result[] = new ActivityNode(
                 $groupId,

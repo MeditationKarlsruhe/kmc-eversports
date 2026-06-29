@@ -9,14 +9,16 @@ final class EversportsClient
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
     private const QUERY = '
-        query($s: DateInput!, $e: DateInput!, $ids: [ID!]) {
+        query($s: DateInput!, $e: DateInput!, $ids: [ID!], $after: Cursor) {
             activities(
-                first: 500,
+                first: 50,
+                after: $after,
                 timeRange: { start: $s, end: $e },
                 isCancelled: false,
                 isArchived: false,
                 activityGroupIds: $ids
             ) {
+                pageInfo { hasNextPage endCursor }
                 nodes {
                     id start end detailsPageURL
                     activityGroup {
@@ -41,14 +43,34 @@ final class EversportsClient
             return $cached;
         }
 
-        $json = $this->request($groupIds);
-        set_transient($cacheKey, $json, HOUR_IN_SECONDS);
+        $allNodes = [];
+        $after = null;
+        do {
+            $pageBody = $this->request($groupIds, $after);
+            $page = json_decode($pageBody, true);
+            if (!is_array($page)) {
+                throw new EversportsApiException('Failed to decode API response.');
+            }
+            $data = is_array($page['data'] ?? null) ? $page['data'] : [];
+            $activ = is_array($data['activities'] ?? null) ? $data['activities'] : [];
+            $nodes = is_array($activ['nodes'] ?? null) ? $activ['nodes'] : [];
+            $allNodes = array_merge($allNodes, $nodes);
+            $pageInfo = is_array($activ['pageInfo'] ?? null) ? $activ['pageInfo'] : [];
+            $hasNextPage = ($pageInfo['hasNextPage'] ?? false) === true;
+            $after = is_string($pageInfo['endCursor'] ?? null) ? $pageInfo['endCursor'] : null;
+        } while ($hasNextPage && $after !== null);
 
+        $json = json_encode(
+            ['data' => ['activities' => ['nodes' => $allNodes]]],
+            JSON_THROW_ON_ERROR,
+        );
+
+        set_transient($cacheKey, $json, HOUR_IN_SECONDS);
         return $json;
     }
 
     /** @param list<string> $groupIds */
-    private function request(array $groupIds): string
+    private function request(array $groupIds, ?string $after): string
     {
         $tz = new \DateTimeZone('Europe/Berlin');
         $variables = [
@@ -57,6 +79,9 @@ final class EversportsClient
         ];
         if ($groupIds !== []) {
             $variables['ids'] = $groupIds;
+        }
+        if ($after !== null) {
+            $variables['after'] = $after;
         }
 
         $body = json_encode(
@@ -81,7 +106,15 @@ final class EversportsClient
             throw new EversportsApiException("Eversports API returned HTTP {$statusCode}.");
         }
 
-        return wp_remote_retrieve_body($response);
+        $responseBody = wp_remote_retrieve_body($response);
+        $decoded = json_decode($responseBody, true);
+        $errors = is_array($decoded) ? ($decoded['errors'] ?? null) : null;
+        if (is_array($errors)) {
+            $messages = array_filter(array_column($errors, 'message'), 'is_string');
+            throw new EversportsApiException('GraphQL errors: ' . implode('; ', $messages));
+        }
+
+        return $responseBody;
     }
 
     private function bearerToken(): string

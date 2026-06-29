@@ -1,8 +1,10 @@
 {
     "scripts": {
-        "start": "wp-now start --php=8.2"
+        "start": "wp-env start --xdebug",
+        "stop": "wp-env stop",
+        "clean": "wp-env destroy"
     },
     "devDependencies": {
-        "@wp-now/wp-now": "*"
+        "@wordpress/env": "*"
     }
 }
