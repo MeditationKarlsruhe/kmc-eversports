@@ -91,9 +91,11 @@ final class EversportsClient
         $variables = [
             's'     => (new \DateTimeImmutable('today', $tz))->format('c'),
             'e'     => (new \DateTimeImmutable('+52 weeks', $tz))->format('c'),
-            'ids'   => $groupIds,
             'after' => $after,
         ];
+        if ($groupIds !== []) {
+            $variables['ids'] = $groupIds;
+        }
 
         $body = json_encode(
             ['query' => self::QUERY, 'variables' => $variables],
