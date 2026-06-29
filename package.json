@@ -1,0 +1,8 @@
+{
+    "scripts": {
+        "start": "wp-now start"
+    },
+    "devDependencies": {
+        "@wp-now/wp-now": "*"
+    }
+}
