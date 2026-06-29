@@ -22,6 +22,12 @@ final class ActivityParser
             throw new MalformedActivitiesResponse('Activities response is not a JSON object.');
         }
 
+        $errors = $data['errors'] ?? null;
+        if (is_array($errors)) {
+            $messages = array_filter(array_column($errors, 'message'), 'is_string');
+            throw new MalformedActivitiesResponse('GraphQL errors: ' . implode('; ', $messages));
+        }
+
         $payload = $data['data'] ?? null;
         if (!is_array($payload)) {
             throw new MalformedActivitiesResponse('Activities response is missing "data".');

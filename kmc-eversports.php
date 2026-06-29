@@ -20,12 +20,19 @@ add_action('init', function (): void {
         $atts = shortcode_atts(['group-ids' => '', 'show-image' => 'true'], $atts);
         $groupIds = array_values(array_filter(array_map('trim', explode(',', (string) $atts['group-ids']))));
 
-        $client = new \Kmc\Eversports\EversportsClient();
-        $json = $client->fetchActivities($groupIds);
+        try {
+            $client = new \Kmc\Eversports\EversportsClient();
+            $json = $client->fetchActivities($groupIds);
 
-        $parser = new \Kmc\Eversports\ActivityParser();
-        $groups = $parser->parse($json);
+            $parser = new \Kmc\Eversports\ActivityParser();
+            $groups = $parser->parse($json);
 
-        return '<pre>' . esc_html(print_r($groups, true)) . '</pre>';
+            return '<pre>' . esc_html(print_r($groups, true)) . '</pre>';
+        } catch (\Throwable $e) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                return '<pre>KMC Eversports Fehler: ' . esc_html($e->getMessage()) . '</pre>';
+            }
+            return '';
+        }
     });
 });
