@@ -89,15 +89,11 @@ final class EversportsClient
     {
         $tz = new \DateTimeZone('Europe/Berlin');
         $variables = [
-            's' => (new \DateTimeImmutable('today', $tz))->format('c'),
-            'e' => (new \DateTimeImmutable('+52 weeks', $tz))->format('c'),
+            's'     => (new \DateTimeImmutable('today', $tz))->format('c'),
+            'e'     => (new \DateTimeImmutable('+52 weeks', $tz))->format('c'),
+            'ids'   => $groupIds,
+            'after' => $after,
         ];
-        if ($groupIds !== []) {
-            $variables['ids'] = $groupIds;
-        }
-        if ($after !== null) {
-            $variables['after'] = $after;
-        }
 
         $body = json_encode(
             ['query' => self::QUERY, 'variables' => $variables],
