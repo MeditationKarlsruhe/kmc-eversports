@@ -106,8 +106,13 @@ Ablauf beim ersten Start:
 1. Plugin „KMC Eversports" unter *Plugins* aktivieren.
 2. Eine neue Seite anlegen, `[eversports-events]` in den Inhalt schreiben, Seite aufrufen.
 
-wp-now speichert Datenbank und Uploads unter `~/.wp-now/`. Ein `npm start` im selben
-Verzeichnis lädt denselben Stand wieder — die Aktivierung bleibt erhalten.
+wp-now speichert Datenbank und Uploads unter `~/.wp-now/` im Container. Ein `npm start`
+lädt denselben Stand wieder — die Plugin-Aktivierung bleibt erhalten, solange der
+Container nur gestoppt und neu gestartet wird.
+
+> **Nach einem Container-Rebuild** (`Dev Containers: Rebuild Container`) wird das
+> Container-Dateisystem zurückgesetzt und `~/.wp-now/` ist weg. Die Schritte 1 und 2
+> oben müssen dann einmalig wiederholt werden.
 
 **Einzelne Tests / Debugging in VS Code:**
 - Im **Test-Explorer** (Becherglas-Symbol links) lässt sich jeder Test per Klick starten
