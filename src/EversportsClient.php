@@ -116,7 +116,8 @@ final class EversportsClient
 
         $statusCode = wp_remote_retrieve_response_code($response);
         if ($statusCode !== 200) {
-            throw new \RuntimeException("Eversports API returned HTTP {$statusCode}.");
+            $body = wp_remote_retrieve_body($response);
+            throw new \RuntimeException("Eversports API returned HTTP {$statusCode}: {$body}");
         }
 
         $responseBody = wp_remote_retrieve_body($response);
