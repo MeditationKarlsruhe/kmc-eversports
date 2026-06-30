@@ -58,8 +58,9 @@ für die Versionsverwaltung.
    composer test    # Tests
    composer stan    # statische Analyse
    composer cs      # Coding-Standard
+   composer mess    # Code-Smell-Erkennung (PHPMD)
    ```
-   Alle drei sollten ohne Fehler durchlaufen.
+   Alle vier sollten ohne Fehler durchlaufen.
 
 > **Wichtig:** Alle Befehle laufen **im Container-Terminal** von VS Code, nicht in einem
 > normalen Windows-Terminal.
@@ -85,6 +86,7 @@ Geheimnis und gehört **niemals ins Repository**.
 | `composer stan` | statische Code-Analyse (PHPStan, schärfste Stufe) |
 | `composer cs` | prüft den Coding-Standard (PSR-12) |
 | `composer cs:fix` | korrigiert Formatierungs-Verstöße automatisch |
+| `composer mess` | prüft auf Code Smells (PHPMD: Komplexität, Benennung, ungenutzte Variablen) |
 | `npm start` | startet WordPress lokal (Port 8881) |
 | `npm run debug` | startet WordPress lokal mit aktiviertem Xdebug (Port 9003) |
 
@@ -157,6 +159,7 @@ package.json                 Node-Abhängigkeiten + Befehls-Kürzel (start/debug
 phpunit.xml.dist             Test-Konfiguration
 phpstan.neon                 Konfiguration der statischen Analyse
 phpcs.xml.dist               Coding-Standard (PSR-12)
+phpmd.xml                    Code-Smell-Regeln (PHPMD)
 ```
 
 ## Architektur & Prinzipien

@@ -72,24 +72,12 @@ final class EversportsClient
 
     private function request(?string $after): string
     {
-        $timezone = new \DateTimeZone('Europe/Berlin');
-        $variables = [
-            'startDate' => (new \DateTimeImmutable('today', $timezone))->format('c'),
-            'endDate'   => (new \DateTimeImmutable('+52 weeks', $timezone))->format('c'),
-            'after'     => $after,
-        ];
-
-        $body = json_encode(
-            ['query' => self::QUERY, 'variables' => $variables],
-            JSON_THROW_ON_ERROR,
-        );
-
         $response = wp_remote_post(self::ENDPOINT, [
             'headers' => [
                 'Content-Type'  => 'application/json',
                 'Authorization' => 'Bearer ' . $this->bearerToken(),
             ],
-            'body' => $body,
+            'body' => $this->buildRequestPayload($after),
         ]);
 
         if (is_wp_error($response)) {
@@ -98,19 +86,39 @@ final class EversportsClient
 
         $statusCode = wp_remote_retrieve_response_code($response);
         if ($statusCode !== 200) {
-            $body = wp_remote_retrieve_body($response);
-            throw new \RuntimeException("Eversports API returned HTTP {$statusCode}: {$body}");
+            $rawBody = wp_remote_retrieve_body($response);
+            throw new \RuntimeException("Eversports API returned HTTP {$statusCode}: {$rawBody}");
         }
 
         $responseBody = wp_remote_retrieve_body($response);
-        $decoded = json_decode($responseBody, true);
+        $this->assertNoGraphQLErrors($responseBody);
+
+        return $responseBody;
+    }
+
+    private function buildRequestPayload(?string $after): string
+    {
+        $timezone = new \DateTimeZone('Europe/Berlin');
+        $variables = [
+            'startDate' => (new \DateTimeImmutable('today', $timezone))->format('c'),
+            'endDate'   => (new \DateTimeImmutable('+52 weeks', $timezone))->format('c'),
+            'after'     => $after,
+        ];
+
+        return json_encode(
+            ['query' => self::QUERY, 'variables' => $variables],
+            JSON_THROW_ON_ERROR,
+        );
+    }
+
+    private function assertNoGraphQLErrors(string $responseBody): void
+    {
+        $decoded = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
         $errors = is_array($decoded) ? ($decoded['errors'] ?? null) : null;
         if (is_array($errors)) {
             $messages = array_filter(array_column($errors, 'message'), 'is_string');
             throw new \RuntimeException('GraphQL errors: ' . implode('; ', $messages));
         }
-
-        return $responseBody;
     }
 
     private function bearerToken(): string
