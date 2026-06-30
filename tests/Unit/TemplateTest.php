@@ -98,6 +98,7 @@ final class TemplateTest extends TestCase
 
     /**
      * @param list<ClassGroup> $groups
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     private function renderTemplate(array $groups, bool $showImage): string
     {

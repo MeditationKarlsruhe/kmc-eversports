@@ -9,3 +9,6 @@ parameters:
         - kmc-eversports.php
     excludePaths:
         - tests/bootstrap.php
+    ignoreErrors:
+        - message: '#PHPDoc tag @SuppressWarnings has invalid value#'
+          path: tests/Unit/TemplateTest.php
