@@ -23,7 +23,11 @@ final class Utf8HtmlDriver extends HtmlDriver
         // UTF-8, preventing multibyte chars from being misread as Latin-1 entities.
         @$domDocument->loadHTML('<?xml encoding="UTF-8">' . $data, LIBXML_HTML_NODEFDTD);
 
-        $htmlValue = $domDocument->saveHTML();
+        $htmlValue = (string) preg_replace(
+            '/^<\?xml encoding="UTF-8">/',
+            '',
+            (string) $domDocument->saveHTML(),
+        );
 
         if (PHP_OS_FAMILY === 'Windows') {
             $htmlValue = implode("\n", explode("\r\n", $htmlValue));
