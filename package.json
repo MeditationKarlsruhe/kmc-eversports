@@ -6,6 +6,6 @@
         "clean": "wp-env destroy"
     },
     "devDependencies": {
-        "@wordpress/env": "*"
+        "@wordpress/env": "^11.9.0"
     }
 }
