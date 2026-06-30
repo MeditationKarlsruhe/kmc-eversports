@@ -188,12 +188,3 @@ Der Code folgt „Clean Development". Wer hier weiterbaut, sollte sich daran hal
   Jeder bekommt exakt dieselbe PHP-Version und dieselben Werkzeuge.
 - **Xdebug** – ermöglicht das schrittweise Durchlaufen des Codes mit Haltepunkten.
 - **Transient** – WordPress-Mechanismus für temporäres Caching mit TTL (Time To Live).
-
-## Roadmap
-
-- ✅ **Dev-Umgebung** — PHP + Node im Dev-Container, lokales WordPress via wp-env mit Xdebug
-- ✅ **API-Anbindung** — `EversportsClient` mit Pagination, Caching und Fehlerbehandlung; `ActivityParser` mit typsicherer Verarbeitung; Shortcode gibt echte Daten aus
-- **HTML-Template + CSS** — gestaltete Ausgabe statt rohem Dump
-- **CI** (GitHub Actions) — Tests, statische Analyse und Coding-Standard laufen automatisch; Code-Coverage ≥ 90 %
-- **Admin-Einstellungsseite** — Token-Verwaltung und „Cache leeren"-Button im WordPress-Admin
-- **Cutover** — altes Plugin + Scraper + Azure-Funktion ablösen
