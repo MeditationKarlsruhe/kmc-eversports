@@ -90,7 +90,7 @@ final class ActivityParserTest extends TestCase
      *     title: string,
      *     descriptionHtml: string,
      *     imageUrl: ?string,
-     *     appointments: list<array{start: string, end: string, registrationLink: string}>,
+     *     appointments: list<array{start: string, end: string, registrationLink: string|null}>,
      * }>
      */
     private function groupsToArray(array $groups): array

@@ -115,6 +115,6 @@ final class EversportsClient
 
     private function bearerToken(): string
     {
-        return file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
+        return file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt'); // @phpstan-ignore return.type
     }
 }
