@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cs:
+    name: Coding Standard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: composer cs
+
+  stan:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: composer stan
+
+  test:
+    name: Tests & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: pcov
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=never
+      - name: Enforce >= 90% line coverage
+        run: |
+          php -r "
+          \$xml = simplexml_load_file('coverage.xml');
+          \$m = \$xml->project->metrics;
+          \$total = (int) \$m['statements'];
+          \$covered = (int) \$m['coveredstatements'];
+          \$pct = \$total > 0 ? round(\$covered / \$total * 100, 1) : 0.0;
+          echo 'Coverage: ' . \$pct . \"%\n\";
+          if (\$pct < 90.0) {
+              fwrite(STDERR, 'Coverage ' . \$pct . \"% is below the required 90%.\n\");
+              exit(1);
+          }
+          "
