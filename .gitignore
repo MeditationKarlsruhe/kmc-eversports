@@ -10,9 +10,11 @@
 # Composer
 composer.phar
 
-# Tests / coverage / build
-/build/
+# Tests / coverage
 /coverage/
+
+# Build — bundle committed; only exclude source maps
+/build/*.map
 .phpunit.result.cache
 .phpunit.cache/
 

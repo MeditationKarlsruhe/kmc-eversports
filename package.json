@@ -3,9 +3,13 @@
         "start": "wp-env start",
         "debug": "wp-env start --xdebug",
         "stop": "wp-env stop",
-        "clean": "wp-env destroy"
+        "clean": "wp-env destroy",
+        "build": "wp-scripts build editor/index.js",
+        "build:watch": "wp-scripts start editor/index.js"
     },
     "devDependencies": {
-        "@wordpress/env": "^11.9.0"
+        "@wordpress/env": "^11.9.0",
+        "@wordpress/scripts": "^30.0",
+        "ajv": "^8.0.0"
     }
 }

@@ -36,4 +36,17 @@ add_action('init', function (): void {
         include __DIR__ . '/templates/eversports-events.php';
         return (string) ob_get_clean();
     });
+
+    register_block_type(__DIR__ . '/block.json', [
+        'render_callback' => function (array $attributes): string {
+            $showImage = $attributes['showImages'] ?? true;
+
+            $json = \Kmc\Eversports\EversportsClient::fetchActivities();
+            $groups = \Kmc\Eversports\ActivityParser::parse($json);
+
+            ob_start();
+            include __DIR__ . '/templates/eversports-events.php';
+            return (string) ob_get_clean();
+        },
+    ]);
 });
