@@ -6,7 +6,10 @@ namespace Kmc\Eversports;
 
 final class Renderer
 {
-    /** @param array<string, mixed> $attributes */
+    /**
+     * @param array<string, mixed> $attributes
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     */
     public static function render(array $attributes): string
     {
         $showImage = $attributes['showImages'] ?? true;
