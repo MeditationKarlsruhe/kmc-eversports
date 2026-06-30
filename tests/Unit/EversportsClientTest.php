@@ -159,7 +159,7 @@ final class EversportsClientTest extends TestCase
         Functions\when('get_transient')->justReturn(false);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('.secrets/eversports-api.txt is missing.');
+        $this->expectExceptionMessage('.secrets/eversports-api.txt is missing or not readable.');
 
         EversportsClient::fetchActivities();
     }

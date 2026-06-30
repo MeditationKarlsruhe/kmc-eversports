@@ -61,7 +61,7 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode(self::request($after), true);
+            $page = json_decode(self::request($after), true, 512, JSON_THROW_ON_ERROR);
             $activities = $page['data']['activities'];
             array_push($allNodes, ...$activities['nodes']);
             $hasNextPage = $activities['pageInfo']['hasNextPage'];
@@ -123,10 +123,10 @@ final class EversportsClient
 
     private static function bearerToken(): string
     {
-        $token = @file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
-        if ($token === false) {
-            throw new \RuntimeException('.secrets/eversports-api.txt is missing.');
+        $path = dirname(__DIR__) . '/.secrets/eversports-api.txt';
+        if (!is_readable($path)) {
+            throw new \RuntimeException('.secrets/eversports-api.txt is missing or not readable.');
         }
-        return $token;
+        return (string) file_get_contents($path);
     }
 }
