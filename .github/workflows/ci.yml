@@ -16,6 +16,12 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
       - run: composer install --no-interaction --no-progress
       - run: composer cs
 
@@ -28,6 +34,12 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
       - run: composer install --no-interaction --no-progress
       - run: composer mess
 
@@ -40,6 +52,12 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
       - run: composer install --no-interaction --no-progress
       - run: composer stan
 
@@ -52,6 +70,12 @@ jobs:
         with:
           php-version: '8.2'
           coverage: pcov
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
       - run: composer install --no-interaction --no-progress
       - run: vendor/bin/phpunit --coverage-clover=coverage.xml --colors=never
       - name: Enforce >= 90% line coverage
