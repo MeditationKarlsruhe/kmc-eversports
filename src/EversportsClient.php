@@ -9,14 +9,13 @@ final class EversportsClient
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
     private const QUERY = '
-        query($s: DateInput!, $e: DateInput!, $ids: [ID!], $after: Cursor) {
+        query($startDate: DateInput!, $endDate: DateInput!, $after: Cursor) {
             activities(
                 first: 50,
                 after: $after,
-                timeRange: { start: $s, end: $e },
+                timeRange: { start: $startDate, end: $endDate },
                 isCancelled: false,
-                isArchived: false,
-                activityGroupIds: $ids
+                isArchived: false
             ) {
                 pageInfo { hasNextPage endCursor }
                 nodes {
@@ -31,36 +30,23 @@ final class EversportsClient
         }
     ';
 
-    /** @param list<string> $groupIds */
-    public function fetchActivities(array $groupIds): string
+    public function fetchActivities(): string
     {
-        $key = $this->cacheKey($groupIds);
-        $cached = get_transient($key);
+        $cached = get_transient('eversports_activities');
         if (is_string($cached)) {
             return $cached;
         }
-        $nodes = $this->fetchAllNodes($groupIds);
+        $nodes = $this->fetchAllNodes();
         $json = json_encode(
             ['data' => ['activities' => ['nodes' => $nodes]]],
             JSON_THROW_ON_ERROR,
         );
-        set_transient($key, $json, HOUR_IN_SECONDS);
+        set_transient('eversports_activities', $json, HOUR_IN_SECONDS);
         return $json;
     }
 
-    /** @param list<string> $groupIds */
-    private function cacheKey(array $groupIds): string
-    {
-        $sorted = $groupIds;
-        sort($sorted);
-        return 'eversports_' . md5(implode(',', $sorted));
-    }
-
-    /**
-     * @param  list<string> $groupIds
-     * @return list<mixed>
-     */
-    private function fetchAllNodes(array $groupIds): array
+    /** @return list<mixed> */
+    private function fetchAllNodes(): array
     {
         $allNodes = [];
         $after = null;
@@ -75,27 +61,23 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode($this->request($groupIds, $after), true);
-            $activ = $page['data']['activities'];
-            $allNodes = array_merge($allNodes, $activ['nodes']);
-            $hasNextPage = $activ['pageInfo']['hasNextPage'];
-            $after = $activ['pageInfo']['endCursor'];
-        } while ($hasNextPage && $after !== null);
+            $page = json_decode($this->request($after), true);
+            $activities = $page['data']['activities'];
+            $allNodes = array_merge($allNodes, $activities['nodes']);
+            $hasNextPage = $activities['pageInfo']['hasNextPage'];
+            $after = $activities['pageInfo']['endCursor'];
+        } while ($hasNextPage);
         return $allNodes;
     }
 
-    /** @param list<string> $groupIds */
-    private function request(array $groupIds, ?string $after): string
+    private function request(?string $after): string
     {
-        $tz = new \DateTimeZone('Europe/Berlin');
+        $timezone = new \DateTimeZone('Europe/Berlin');
         $variables = [
-            's'     => (new \DateTimeImmutable('today', $tz))->format('c'),
-            'e'     => (new \DateTimeImmutable('+52 weeks', $tz))->format('c'),
-            'after' => $after,
+            'startDate' => (new \DateTimeImmutable('today', $timezone))->format('c'),
+            'endDate'   => (new \DateTimeImmutable('+52 weeks', $timezone))->format('c'),
+            'after'     => $after,
         ];
-        if ($groupIds !== []) {
-            $variables['ids'] = $groupIds;
-        }
 
         $body = json_encode(
             ['query' => self::QUERY, 'variables' => $variables],
@@ -133,10 +115,6 @@ final class EversportsClient
 
     private function bearerToken(): string
     {
-        $token = file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
-        if ($token === false) {
-            throw new \RuntimeException('.secrets/eversports-api.txt is missing.');
-        }
-        return $token;
+        return file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
     }
 }

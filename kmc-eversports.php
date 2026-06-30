@@ -17,11 +17,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 add_action('init', function (): void {
     add_shortcode('eversports-events', function (array $atts): string {
-        $atts = shortcode_atts(['group-ids' => '', 'show-image' => 'true'], $atts);
-        $groupIds = array_values(array_filter(array_map('trim', explode(',', (string) $atts['group-ids']))));
+        $atts = shortcode_atts(['show-image' => 'true'], $atts);
 
         $client = new \Kmc\Eversports\EversportsClient();
-        $json = $client->fetchActivities($groupIds);
+        $json = $client->fetchActivities();
 
         $parser = new \Kmc\Eversports\ActivityParser();
         $groups = $parser->parse($json);
