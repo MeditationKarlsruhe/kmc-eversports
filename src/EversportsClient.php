@@ -63,7 +63,7 @@ final class EversportsClient
              */
             $page = json_decode($this->request($after), true);
             $activities = $page['data']['activities'];
-            $allNodes = array_merge($allNodes, $activities['nodes']);
+            array_push($allNodes, ...$activities['nodes']);
             $hasNextPage = $activities['pageInfo']['hasNextPage'];
             $after = $activities['pageInfo']['endCursor'];
         } while ($hasNextPage);
