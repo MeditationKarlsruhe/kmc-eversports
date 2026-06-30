@@ -20,7 +20,7 @@ add_action('wp_enqueue_scripts', function (): void {
         'kmc-eversports',
         plugin_dir_url(__FILE__) . 'assets/css/kmc-eversports.css',
         [],
-        '1.0.0'
+        (string) filemtime(__DIR__ . '/assets/css/kmc-eversports.css')
     );
 });
 
@@ -29,8 +29,13 @@ add_action('init', function (): void {
         'render_callback' => function (array $attributes): string {
             $showImage = $attributes['showImages'] ?? true;
 
-            $json = \Kmc\Eversports\EversportsClient::fetchActivities();
-            $groups = \Kmc\Eversports\ActivityParser::parse($json);
+            try {
+                $json = \Kmc\Eversports\EversportsClient::fetchActivities();
+                $groups = \Kmc\Eversports\ActivityParser::parse($json);
+            } catch (\Throwable $e) {
+                error_log('KMC Eversports: ' . $e->getMessage());
+                return '';
+            }
 
             ob_start();
             include __DIR__ . '/templates/eversports-events.php';
