@@ -7,30 +7,17 @@
 
     <description>PHPMD ruleset for kmc-eversports.</description>
 
-    <!-- Ungenutzte Code-Teile -->
     <rule ref="rulesets/unusedcode.xml" />
 
-    <!-- Benennung -->
     <rule ref="rulesets/naming.xml">
         <!-- Kurzname $id, $e etc. erlaubt -->
         <exclude name="ShortVariable" />
     </rule>
 
-    <!-- Komplexität -->
-    <rule ref="rulesets/codesize.xml">
-        <!-- Snapshot-Helfer in Tests dürfen länger sein -->
-        <exclude name="ExcessiveMethodLength" />
-    </rule>
-    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
-        <properties>
-            <property name="minimum" value="40" />
-        </properties>
-        <exclude-pattern>tests/</exclude-pattern>
-    </rule>
+    <rule ref="rulesets/codesize.xml" />
 
-    <!-- Design-Probleme (z. B. eval, exit in Nicht-Bootstrap-Code) -->
     <rule ref="rulesets/design.xml">
-        <!-- exit; im Plugin-Entry-Point ist absichtlich -->
+        <!-- exit; im Plugin-Entry-Point ist WordPress-Konvention -->
         <exclude name="ExitExpression" />
     </rule>
 

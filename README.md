@@ -60,7 +60,7 @@ für die Versionsverwaltung.
    composer cs      # Coding-Standard
    composer mess    # Code-Smell-Erkennung (PHPMD)
    ```
-   Alle vier sollten ohne Fehler durchlaufen.
+   Alle sollten ohne Fehler durchlaufen.
 
 > **Wichtig:** Alle Befehle laufen **im Container-Terminal** von VS Code, nicht in einem
 > normalen Windows-Terminal.
