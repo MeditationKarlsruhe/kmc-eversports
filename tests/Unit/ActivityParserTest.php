@@ -19,8 +19,7 @@ final class ActivityParserTest extends TestCase
         $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
         self::assertNotFalse($json);
 
-        $parser = new ActivityParser();
-        $groups = $parser->parse($json);
+        $groups = ActivityParser::parse($json);
 
         $this->assertMatchesJsonSnapshot($this->groupsToArray($groups));
     }
@@ -30,8 +29,7 @@ final class ActivityParserTest extends TestCase
         $json = file_get_contents(__DIR__ . '/../../spike/sample-activities.json');
         self::assertNotFalse($json);
 
-        $parser = new ActivityParser();
-        $groups = $parser->parse($json);
+        $groups = ActivityParser::parse($json);
 
         $expectedUrl = 'https://files.eversports.com/f79b7bdb-1c2d-45ae-a60d-ceb5423ed045/'
             . 'eversports__bild-prasentation-43-11png-original.png';
@@ -60,16 +58,14 @@ final class ActivityParserTest extends TestCase
         ]);
         self::assertIsString($json);
 
-        $parser = new ActivityParser();
-        $groups = $parser->parse($json);
+        $groups = ActivityParser::parse($json);
 
         self::assertNull($groups[0]->imageUrl);
     }
 
     public function testItReturnsNoGroupsForAnEmptyActivityList(): void
     {
-        $parser = new ActivityParser();
-        $groups = $parser->parse('{"data":{"activities":{"nodes":[]}}}');
+        $groups = ActivityParser::parse('{"data":{"activities":{"nodes":[]}}}');
 
         self::assertSame([], $groups);
     }

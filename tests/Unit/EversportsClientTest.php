@@ -46,7 +46,7 @@ final class EversportsClientTest extends TestCase
         $cached = '{"data":{"activities":{"nodes":[]}}}';
         Functions\when('get_transient')->justReturn($cached);
 
-        $result = (new EversportsClient())->fetchActivities();
+        $result = EversportsClient::fetchActivities();
 
         self::assertSame($cached, $result);
     }
@@ -76,7 +76,7 @@ final class EversportsClientTest extends TestCase
             ->with('eversports_activities', Mockery::type('string'), HOUR_IN_SECONDS)
             ->andReturn(true);
 
-        $result = (new EversportsClient())->fetchActivities();
+        $result = EversportsClient::fetchActivities();
 
         /** @var array{data: array{activities: array{nodes: list<mixed>}}} $decoded */
         $decoded = json_decode($result, true);
@@ -107,7 +107,7 @@ final class EversportsClientTest extends TestCase
             });
         Functions\when('set_transient')->justReturn(true);
 
-        $result = (new EversportsClient())->fetchActivities();
+        $result = EversportsClient::fetchActivities();
 
         /** @var array{data: array{activities: array{nodes: list<mixed>}}} $decoded */
         $decoded = json_decode($result, true);
@@ -122,7 +122,7 @@ final class EversportsClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Connection refused');
 
-        (new EversportsClient())->fetchActivities();
+        EversportsClient::fetchActivities();
     }
 
     public function testItThrowsOnNon200Response(): void
@@ -133,7 +133,7 @@ final class EversportsClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('HTTP 500');
 
-        (new EversportsClient())->fetchActivities();
+        EversportsClient::fetchActivities();
     }
 
     public function testItThrowsOnGraphQLErrors(): void
@@ -149,7 +149,7 @@ final class EversportsClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('first must not be greater than 50');
 
-        (new EversportsClient())->fetchActivities();
+        EversportsClient::fetchActivities();
     }
 
     public function testItThrowsWhenSecretFileMissing(): void
@@ -161,7 +161,7 @@ final class EversportsClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('.secrets/eversports-api.txt is missing.');
 
-        (new EversportsClient())->fetchActivities();
+        EversportsClient::fetchActivities();
     }
 
     /** @return array{response: array{code: int, message: string}, body: string} */

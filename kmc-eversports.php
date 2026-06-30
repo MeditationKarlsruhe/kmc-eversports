@@ -19,11 +19,8 @@ add_action('init', function (): void {
     add_shortcode('eversports-events', function (array $atts): string {
         $atts = shortcode_atts(['show-image' => 'true'], $atts);
 
-        $client = new \Kmc\Eversports\EversportsClient();
-        $json = $client->fetchActivities();
-
-        $parser = new \Kmc\Eversports\ActivityParser();
-        $groups = $parser->parse($json);
+        $json = \Kmc\Eversports\EversportsClient::fetchActivities();
+        $groups = \Kmc\Eversports\ActivityParser::parse($json);
 
         return '<pre>' . esc_html(print_r($groups, true)) . '</pre>';
     });

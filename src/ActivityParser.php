@@ -7,14 +7,14 @@ namespace Kmc\Eversports;
 final class ActivityParser
 {
     /** @return list<ClassGroup> */
-    public function parse(string $activitiesJson): array
+    public static function parse(string $activitiesJson): array
     {
-        $nodes = $this->decodeNodes($activitiesJson);
-        return $this->toClassGroups($nodes);
+        $nodes = self::decodeNodes($activitiesJson);
+        return self::toClassGroups($nodes);
     }
 
     /** @return list<ActivityNode> */
-    private function decodeNodes(string $activitiesJson): array
+    private static function decodeNodes(string $activitiesJson): array
     {
         /**
          * @var array{
@@ -57,7 +57,7 @@ final class ActivityParser
      * @param  list<ActivityNode> $nodes
      * @return list<ClassGroup>
      */
-    private function toClassGroups(array $nodes): array
+    private static function toClassGroups(array $nodes): array
     {
         /** @var array<string, array{0: string, 1: string, 2: ?string}> $meta */
         $meta = [];

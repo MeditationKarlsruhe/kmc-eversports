@@ -30,13 +30,13 @@ final class EversportsClient
         }
     ';
 
-    public function fetchActivities(): string
+    public static function fetchActivities(): string
     {
         $cached = get_transient('eversports_activities');
         if (is_string($cached)) {
             return $cached;
         }
-        $nodes = $this->fetchAllNodes();
+        $nodes = self::fetchAllNodes();
         $json = json_encode(
             ['data' => ['activities' => ['nodes' => $nodes]]],
             JSON_THROW_ON_ERROR,
@@ -46,7 +46,7 @@ final class EversportsClient
     }
 
     /** @return list<mixed> */
-    private function fetchAllNodes(): array
+    private static function fetchAllNodes(): array
     {
         $allNodes = [];
         $after = null;
@@ -61,7 +61,7 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode($this->request($after), true);
+            $page = json_decode(self::request($after), true);
             $activities = $page['data']['activities'];
             array_push($allNodes, ...$activities['nodes']);
             $hasNextPage = $activities['pageInfo']['hasNextPage'];
@@ -70,14 +70,14 @@ final class EversportsClient
         return $allNodes;
     }
 
-    private function request(?string $after): string
+    private static function request(?string $after): string
     {
         $response = wp_remote_post(self::ENDPOINT, [
             'headers' => [
                 'Content-Type'  => 'application/json',
-                'Authorization' => 'Bearer ' . $this->bearerToken(),
+                'Authorization' => 'Bearer ' . self::bearerToken(),
             ],
-            'body' => $this->buildRequestPayload($after),
+            'body' => self::buildRequestPayload($after),
         ]);
 
         if (is_wp_error($response)) {
@@ -91,12 +91,12 @@ final class EversportsClient
         }
 
         $responseBody = wp_remote_retrieve_body($response);
-        $this->assertNoGraphQLErrors($responseBody);
+        self::assertNoGraphQLErrors($responseBody);
 
         return $responseBody;
     }
 
-    private function buildRequestPayload(?string $after): string
+    private static function buildRequestPayload(?string $after): string
     {
         $timezone = new \DateTimeZone('Europe/Berlin');
         $variables = [
@@ -111,7 +111,7 @@ final class EversportsClient
         );
     }
 
-    private function assertNoGraphQLErrors(string $responseBody): void
+    private static function assertNoGraphQLErrors(string $responseBody): void
     {
         $decoded = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
         $errors = is_array($decoded) ? ($decoded['errors'] ?? null) : null;
@@ -121,7 +121,7 @@ final class EversportsClient
         }
     }
 
-    private function bearerToken(): string
+    private static function bearerToken(): string
     {
         $token = @file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
         if ($token === false) {
