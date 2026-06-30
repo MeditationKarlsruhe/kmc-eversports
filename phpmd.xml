@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ruleset name="kmc-eversports"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+    <description>PHPMD ruleset for kmc-eversports.</description>
+
+    <!-- Ungenutzte Code-Teile -->
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <!-- Benennung -->
+    <rule ref="rulesets/naming.xml">
+        <!-- Kurzname $id, $e etc. erlaubt -->
+        <exclude name="ShortVariable" />
+    </rule>
+
+    <!-- Komplexität -->
+    <rule ref="rulesets/codesize.xml">
+        <!-- Snapshot-Helfer in Tests dürfen länger sein -->
+        <exclude name="ExcessiveMethodLength" />
+    </rule>
+    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
+        <properties>
+            <property name="minimum" value="40" />
+        </properties>
+        <exclude-pattern>tests/</exclude-pattern>
+    </rule>
+
+    <!-- Design-Probleme (z. B. eval, exit in Nicht-Bootstrap-Code) -->
+    <rule ref="rulesets/design.xml">
+        <!-- exit; im Plugin-Entry-Point ist absichtlich -->
+        <exclude name="ExitExpression" />
+    </rule>
+
+</ruleset>

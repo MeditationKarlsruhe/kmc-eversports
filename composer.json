@@ -8,6 +8,7 @@
     },
     "require-dev": {
         "brain/monkey": "^2.7",
+        "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^11.0",
         "spatie/phpunit-snapshot-assertions": "^5.4",
@@ -28,7 +29,8 @@
         "test": "phpunit",
         "stan": "phpstan analyse --memory-limit=512M",
         "cs": "phpcs",
-        "cs:fix": "phpcbf"
+        "cs:fix": "phpcbf",
+        "mess": "phpmd src,tests text phpmd.xml"
     },
     "config": {
         "sort-packages": true
