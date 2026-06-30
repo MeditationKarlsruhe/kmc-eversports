@@ -1,0 +1,16 @@
+{
+    "apiVersion": 3,
+    "name": "kmc/eversports-events",
+    "title": "Eversports Events",
+    "category": "widgets",
+    "editorScript": "file:./build/index.js",
+    "attributes": {
+        "showImages": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "supports": {
+        "html": false
+    }
+}
