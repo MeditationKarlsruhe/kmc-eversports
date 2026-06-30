@@ -25,18 +25,6 @@ add_action('wp_enqueue_scripts', function (): void {
 });
 
 add_action('init', function (): void {
-    add_shortcode('eversports-events', function (array $atts): string {
-        $atts = shortcode_atts(['show-image' => 'true'], $atts);
-        $showImage = $atts['show-image'] === 'true';
-
-        $json = \Kmc\Eversports\EversportsClient::fetchActivities();
-        $groups = \Kmc\Eversports\ActivityParser::parse($json);
-
-        ob_start();
-        include __DIR__ . '/templates/eversports-events.php';
-        return (string) ob_get_clean();
-    });
-
     register_block_type(__DIR__ . '/block.json', [
         'render_callback' => function (array $attributes): string {
             $showImage = $attributes['showImages'] ?? true;
