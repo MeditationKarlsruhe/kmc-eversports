@@ -7,6 +7,7 @@ namespace Kmc\Eversports\Tests\Unit;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 use Kmc\Eversports\EversportsClient;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 final class EversportsClientTest extends TestCase
@@ -53,12 +54,27 @@ final class EversportsClientTest extends TestCase
     public function testItFetchesAndCachesWhenCacheIsEmpty(): void
     {
         $node = ['id' => 'node-1'];
+        $response = $this->makeHttpResponse(
+            200,
+            json_encode($this->makeApiResponse([$node], false), JSON_THROW_ON_ERROR),
+        );
 
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn(
-            $this->makeHttpResponse(200, json_encode($this->makeApiResponse([$node], false), JSON_THROW_ON_ERROR)),
-        );
-        Functions\when('set_transient')->justReturn(true);
+        Functions\expect('wp_remote_post')
+            ->once()
+            ->with(
+                'https://provider-api.eversportsmanager.io/api/graphql',
+                Mockery::on(function (mixed $args): bool {
+                    /** @var array{headers: array{Content-Type: string, Authorization: string}} $args */
+                    return $args['headers']['Content-Type'] === 'application/json'
+                        && str_starts_with($args['headers']['Authorization'], 'Bearer ');
+                }),
+            )
+            ->andReturn($response);
+        Functions\expect('set_transient')
+            ->once()
+            ->with('eversports_activities', Mockery::type('string'), HOUR_IN_SECONDS)
+            ->andReturn(true);
 
         $result = (new EversportsClient())->fetchActivities();
 
@@ -80,11 +96,15 @@ final class EversportsClientTest extends TestCase
         $call = 0;
 
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->alias(
-            function () use (&$call, $response1, $response2): array {
+        Functions\expect('wp_remote_post')
+            ->twice()
+            ->with(
+                'https://provider-api.eversportsmanager.io/api/graphql',
+                Mockery::type('array'),
+            )
+            ->andReturnUsing(function () use (&$call, $response1, $response2): array {
                 return $call++ === 0 ? $response1 : $response2;
-            },
-        );
+            });
         Functions\when('set_transient')->justReturn(true);
 
         $result = (new EversportsClient())->fetchActivities();
