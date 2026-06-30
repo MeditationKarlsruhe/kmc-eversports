@@ -11,31 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 final class RendererTest extends TestCase
 {
-    private string $secretsDir;
-    private string $secretsFile;
-    private bool $createdSecretsDir = false;
-
     protected function setUp(): void
     {
         parent::setUp();
         Monkey\setUp();
-        $this->secretsDir = dirname(__DIR__, 2) . '/.secrets';
-        $this->secretsFile = $this->secretsDir . '/eversports-api.txt';
-        if (!is_dir($this->secretsDir)) {
-            mkdir($this->secretsDir, 0755, true);
-            $this->createdSecretsDir = true;
-        }
-        file_put_contents($this->secretsFile, 'test-token');
     }
 
     protected function tearDown(): void
     {
-        if (file_exists($this->secretsFile)) {
-            unlink($this->secretsFile);
-        }
-        if ($this->createdSecretsDir && is_dir($this->secretsDir)) {
-            rmdir($this->secretsDir);
-        }
         Monkey\tearDown();
         parent::tearDown();
     }
@@ -43,6 +26,7 @@ final class RendererTest extends TestCase
     public function testItReturnsEmptyStringWhenClientThrows(): void
     {
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\when('wp_remote_post')->justReturn(new \WP_Error('http_error', 'Connection refused'));
 
         $result = Renderer::render(['showImages' => true]);
