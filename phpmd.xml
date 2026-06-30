@@ -16,9 +16,10 @@
 
     <rule ref="rulesets/codesize.xml" />
 
-    <rule ref="rulesets/design.xml">
-        <!-- exit; im Plugin-Entry-Point ist WordPress-Konvention -->
-        <exclude name="ExitExpression" />
+    <rule ref="rulesets/design.xml" />
+
+    <rule ref="rulesets/design.xml/ExitExpression">
+        <exclude-pattern>kmc-eversports.php</exclude-pattern>
     </rule>
 
 </ruleset>
