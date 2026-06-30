@@ -1,0 +1,85 @@
+.kmc-eversports-events {
+    font-family: "Montserrat", sans-serif;
+}
+
+.kmc-event-group {
+    margin-bottom: 80px;
+}
+
+.kmc-event-group__image {
+    width: 80%;
+    margin: 0 auto 40px;
+}
+
+.kmc-event-group__image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.kmc-event-group__title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.kmc-event-group__description {
+    line-height: 1.75;
+    margin-bottom: 24px;
+}
+
+.kmc-event-group__description a {
+    color: #f2c7ac;
+}
+
+.kmc-event-group__appointments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.kmc-appointment {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid currentColor;
+    padding: 12px;
+    min-width: 200px;
+    flex: 1 1 200px;
+    max-width: 300px;
+}
+
+.kmc-appointment__date {
+    font-weight: 600;
+}
+
+.kmc-appointment__time {
+    margin-top: 8px;
+}
+
+.kmc-appointment__register {
+    display: block;
+    margin-top: 16px;
+    padding: 12px 0;
+    text-align: center;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #334d5c;
+    border: 2px solid #334d5c;
+    border-radius: 15px;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.kmc-appointment__register:hover {
+    background-color: #ffffff;
+    color: #334d5c;
+}
+
+@media (max-width: 600px) {
+    .kmc-event-group__image {
+        width: 100%;
+    }
+
+    .kmc-appointment {
+        max-width: 100%;
+    }
+}
