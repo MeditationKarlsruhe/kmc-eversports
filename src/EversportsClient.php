@@ -6,6 +6,9 @@ namespace Kmc\Eversports;
 
 final class EversportsClient
 {
+    public const OPTION_TOKEN  = 'kmc_eversports_api_token';
+    public const TRANSIENT_KEY = 'eversports_activities';
+
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
     private const QUERY = '
@@ -32,7 +35,7 @@ final class EversportsClient
 
     public static function fetchActivities(): string
     {
-        $cached = get_transient('eversports_activities');
+        $cached = get_transient(self::TRANSIENT_KEY);
         if (is_string($cached)) {
             return $cached;
         }
@@ -41,7 +44,7 @@ final class EversportsClient
             ['data' => ['activities' => ['nodes' => $nodes]]],
             JSON_THROW_ON_ERROR,
         );
-        set_transient('eversports_activities', $json, HOUR_IN_SECONDS);
+        set_transient(self::TRANSIENT_KEY, $json, HOUR_IN_SECONDS);
         return $json;
     }
 
@@ -123,10 +126,13 @@ final class EversportsClient
 
     private static function bearerToken(): string
     {
-        $path = dirname(__DIR__) . '/.secrets/eversports-api.txt';
-        if (!is_readable($path)) {
-            throw new \RuntimeException('.secrets/eversports-api.txt is missing or not readable.');
+        $raw   = get_option(self::OPTION_TOKEN, '');
+        $token = is_string($raw) ? $raw : '';
+        if ($token === '') {
+            throw new \RuntimeException(
+                'Eversports API token is not configured. Please set it in Settings → KMC Eversports.',
+            );
         }
-        return (string) file_get_contents($path);
+        return $token;
     }
 }
