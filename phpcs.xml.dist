@@ -10,4 +10,8 @@
     <arg value="sp"/>
 
     <rule ref="PSR12"/>
+
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>tests/bootstrap.php</exclude-pattern>
+    </rule>
 </ruleset>

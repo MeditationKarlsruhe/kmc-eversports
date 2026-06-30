@@ -115,7 +115,7 @@ final class EversportsClient
 
     private function bearerToken(): string
     {
-        $token = file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
+        $token = @file_get_contents(dirname(__DIR__) . '/.secrets/eversports-api.txt');
         if ($token === false) {
             throw new \RuntimeException('.secrets/eversports-api.txt is missing.');
         }

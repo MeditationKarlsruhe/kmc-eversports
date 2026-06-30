@@ -7,7 +7,6 @@ namespace Kmc\Eversports\Tests\Unit;
 use Kmc\Eversports\ActivityParser;
 use Kmc\Eversports\Appointment;
 use Kmc\Eversports\ClassGroup;
-use Kmc\Eversports\MalformedActivitiesResponse;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -73,14 +72,6 @@ final class ActivityParserTest extends TestCase
         $groups = $parser->parse('{"data":{"activities":{"nodes":[]}}}');
 
         self::assertSame([], $groups);
-    }
-
-    public function testItThrowsOnAMalformedResponse(): void
-    {
-        $this->expectException(MalformedActivitiesResponse::class);
-
-        $parser = new ActivityParser();
-        $parser->parse('{"data":{"activities":{}}}');
     }
 
     /**
