@@ -55,11 +55,8 @@ final class EversportsClientTest extends TestCase
         $node = ['id' => 'node-1'];
 
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn([]);
-        Functions\when('is_wp_error')->justReturn(false);
-        Functions\when('wp_remote_retrieve_response_code')->justReturn(200);
-        Functions\when('wp_remote_retrieve_body')->justReturn(
-            json_encode($this->makeApiResponse([$node], false), JSON_THROW_ON_ERROR),
+        Functions\when('wp_remote_post')->justReturn(
+            $this->makeHttpResponse(200, json_encode($this->makeApiResponse([$node], false), JSON_THROW_ON_ERROR)),
         );
         Functions\when('set_transient')->justReturn(true);
 
@@ -72,17 +69,20 @@ final class EversportsClientTest extends TestCase
 
     public function testItMergesMultiplePagesIntoOneResult(): void
     {
-        $page1 = json_encode($this->makeApiResponse([['id' => 'a']], true, 'cursor1'), JSON_THROW_ON_ERROR);
-        $page2 = json_encode($this->makeApiResponse([['id' => 'b']], false), JSON_THROW_ON_ERROR);
+        $response1 = $this->makeHttpResponse(
+            200,
+            json_encode($this->makeApiResponse([['id' => 'a']], true, 'cursor1'), JSON_THROW_ON_ERROR),
+        );
+        $response2 = $this->makeHttpResponse(
+            200,
+            json_encode($this->makeApiResponse([['id' => 'b']], false), JSON_THROW_ON_ERROR),
+        );
         $call = 0;
 
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn([]);
-        Functions\when('is_wp_error')->justReturn(false);
-        Functions\when('wp_remote_retrieve_response_code')->justReturn(200);
-        Functions\when('wp_remote_retrieve_body')->alias(
-            function () use (&$call, $page1, $page2): string {
-                return $call++ === 0 ? $page1 : $page2;
+        Functions\when('wp_remote_post')->alias(
+            function () use (&$call, $response1, $response2): array {
+                return $call++ === 0 ? $response1 : $response2;
             },
         );
         Functions\when('set_transient')->justReturn(true);
@@ -96,17 +96,8 @@ final class EversportsClientTest extends TestCase
 
     public function testItThrowsOnWpError(): void
     {
-        $wpError = new class {
-            // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-            public function get_error_message(): string
-            {
-                return 'Connection refused';
-            }
-        };
-
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn($wpError);
-        Functions\when('is_wp_error')->justReturn(true);
+        Functions\when('wp_remote_post')->justReturn(new \WP_Error('http_error', 'Connection refused'));
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Connection refused');
@@ -117,10 +108,7 @@ final class EversportsClientTest extends TestCase
     public function testItThrowsOnNon200Response(): void
     {
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn([]);
-        Functions\when('is_wp_error')->justReturn(false);
-        Functions\when('wp_remote_retrieve_response_code')->justReturn(500);
-        Functions\when('wp_remote_retrieve_body')->justReturn('Internal Server Error');
+        Functions\when('wp_remote_post')->justReturn($this->makeHttpResponse(500, 'Internal Server Error'));
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('HTTP 500');
@@ -130,13 +118,13 @@ final class EversportsClientTest extends TestCase
 
     public function testItThrowsOnGraphQLErrors(): void
     {
-        $body = json_encode(['errors' => [['message' => 'first must not be greater than 50']]], JSON_THROW_ON_ERROR);
+        $body = json_encode(
+            ['errors' => [['message' => 'first must not be greater than 50']]],
+            JSON_THROW_ON_ERROR,
+        );
 
         Functions\when('get_transient')->justReturn(false);
-        Functions\when('wp_remote_post')->justReturn([]);
-        Functions\when('is_wp_error')->justReturn(false);
-        Functions\when('wp_remote_retrieve_response_code')->justReturn(200);
-        Functions\when('wp_remote_retrieve_body')->justReturn($body);
+        Functions\when('wp_remote_post')->justReturn($this->makeHttpResponse(200, $body));
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('first must not be greater than 50');
@@ -154,6 +142,12 @@ final class EversportsClientTest extends TestCase
         $this->expectExceptionMessage('.secrets/eversports-api.txt is missing.');
 
         (new EversportsClient())->fetchActivities();
+    }
+
+    /** @return array{response: array{code: int, message: string}, body: string} */
+    private function makeHttpResponse(int $code, string $body): array
+    {
+        return ['response' => ['code' => $code, 'message' => 'OK'], 'body' => $body];
     }
 
     /**

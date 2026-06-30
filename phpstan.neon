@@ -7,3 +7,5 @@ parameters:
         - src
         - tests
         - kmc-eversports.php
+    excludePaths:
+        - tests/bootstrap.php
