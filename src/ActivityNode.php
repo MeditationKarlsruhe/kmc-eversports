@@ -13,7 +13,7 @@ final readonly class ActivityNode
         public ?string $imageUrl,
         public string $appointmentStart,
         public string $appointmentEnd,
-        public string $registrationLink,
+        public ?string $registrationLink,
     ) {
     }
 }

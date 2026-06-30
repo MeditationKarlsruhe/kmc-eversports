@@ -4,11 +4,6 @@ WordPress-Plugin, das den **Kursplan des Kadampa Meditationszentrums Karlsruhe**
 [Eversports](https://www.eversports.de/) auf der KMC-Website anzeigt. Es ruft dazu die
 **offizielle Eversports-GraphQL-API** auf, gruppiert die Kurse und rendert sie.
 
-> **Hinweis zum Stand:** Das Projekt wird gerade neu aufgebaut und ist **noch nicht
-> produktionsreif**. Plugin-Datei und Shortcode existieren, zeigen aber noch einen
-> Platzhalter statt echter Kursdaten. Der Live-Aufruf der API, das HTML-Template und
-> Caching sind noch nicht gebaut — siehe [Roadmap](#roadmap).
-
 ---
 
 ## Warum ein Neubau?
@@ -24,13 +19,16 @@ Eversports' Schutzmechanismus (Cloudflare) blockiert. Der Neubau ersetzt das dur
 Eversports GraphQL-API
         │   (HTTPS, Bearer-Token)
         ▼
-ActivityParser   →   ClassGroup-Objekte   →   (später) WordPress-Shortcode → HTML
+EversportsClient  →  JSON (gecacht, 1h TTL)
+        │
+        ▼
+ActivityParser   →   ClassGroup-Objekte   →   WordPress-Shortcode → HTML
 ```
 
-- Die API liefert eine Liste einzelner **Termine** (jeder Termin gehört zu einer Kursgruppe).
-- `ActivityParser` validiert die Antwort und fasst die Termine zu eindeutigen
-  **Kursgruppen** (`ClassGroup`) zusammen.
-- Die Anzeige auf der Website (Shortcode + HTML-Template) folgt in einem späteren Schritt.
+- `EversportsClient` holt alle Termine der nächsten 52 Wochen (paginiert, max. 50 pro
+  Request) und legt das Ergebnis als WordPress-Transient für 1 Stunde zwischen.
+- `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
+- Der WordPress-Shortcode `[eversports-events]` rendert die Gruppen als HTML.
 
 ---
 
@@ -41,7 +39,7 @@ denn die gesamte Entwicklungsumgebung steckt in einem Container:
 
 | Werkzeug | Wozu |
 |---|---|
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | führt den Entwicklungs-Container aus (muss laufen) |
+| [Docker Desktop](https://www.docker.com/products/docker-docker-desktop/) | führt den Entwicklungs-Container aus (muss laufen) |
 | [Visual Studio Code](https://code.visualstudio.com/) | der Editor |
 | VS-Code-Extension **„Dev Containers"** (`ms-vscode-remote.remote-containers`) | öffnet das Projekt im Container |
 
@@ -77,10 +75,6 @@ Geheimnis und gehört **niemals ins Repository**.
   Authentifizierung per Header `Authorization: Bearer <token>`.
 - Den Token bekommt man in den API-Einstellungen des Eversports-Studio-Accounts.
 
-> Aktuell wird der Token nur manuell verwendet (zum Erkunden der API, siehe `spike/`). Wenn
-> der Live-Aufruf ins Plugin eingebaut wird, kommt der Schlüssel als Konstante in die
-> WordPress-Konfiguration (`wp-config.php`), nicht in die Datenbank oder das Admin-Panel.
-
 ---
 
 ## Tägliche Befehle
@@ -91,7 +85,8 @@ Geheimnis und gehört **niemals ins Repository**.
 | `composer stan` | statische Code-Analyse (PHPStan, schärfste Stufe) |
 | `composer cs` | prüft den Coding-Standard (PSR-12) |
 | `composer cs:fix` | korrigiert Formatierungs-Verstöße automatisch |
-| `npm start` | startet WordPress lokal (Port 8881, siehe unten) |
+| `npm start` | startet WordPress lokal (Port 8881) |
+| `npm run debug` | startet WordPress lokal mit aktiviertem Xdebug (Port 9003) |
 
 ### WordPress lokal starten
 
@@ -106,29 +101,50 @@ Ablauf beim ersten Start:
 1. Plugin „KMC Eversports" unter *Plugins* aktivieren.
 2. Eine neue Seite anlegen, `[eversports-events]` in den Inhalt schreiben, Seite aufrufen.
 
-wp-now speichert Datenbank und Uploads unter `~/.wp-now/` im Container. Ein `npm start`
-lädt denselben Stand wieder — die Plugin-Aktivierung bleibt erhalten, solange der
-Container nur gestoppt und neu gestartet wird.
+Beim nächsten `npm start` bleibt der Zustand erhalten (Plugin-Aktivierung, Seiteninhalte).
 
-> **Nach einem Container-Rebuild** (`Dev Containers: Rebuild Container`) wird das
-> Container-Dateisystem zurückgesetzt und `~/.wp-now/` ist weg. Die Schritte 1 und 2
-> oben müssen dann einmalig wiederholt werden.
+> **Nach einem Container-Rebuild** (`Dev Containers: Rebuild Container`) oder `npm run clean`
+> werden die Docker-Volumes gelöscht. Die Schritte 1 und 2 oben müssen dann einmalig
+> wiederholt werden.
 
-**Einzelne Tests / Debugging in VS Code:**
-- Im **Test-Explorer** (Becherglas-Symbol links) lässt sich jeder Test per Klick starten
-  oder mit „Debug Test" mit gesetztem Haltepunkt (Breakpoint) durchsteppen.
-- Beim **Speichern** einer PHP-Datei wird sie automatisch nach PSR-12 formatiert.
+### Xdebug
+
+Für schrittweises Debuggen mit Breakpoints:
+
+```bash
+npm run debug
+```
+
+In VS Code die Debug-Konfiguration **„Listen for Xdebug"** starten (`F5`), dann die
+gewünschte Seite im Browser aufrufen. Xdebug hört auf Port 9003.
+
+### Cache invalidieren
+
+Der `EversportsClient` legt API-Antworten für **1 Stunde** als WordPress-Transient zwischen.
+
+**Entwickler (WP-CLI im Container-Terminal):**
+```bash
+npx wp-env run cli wp transient delete --all
+```
+
+**Content-Ersteller (kein CLI-Zugang):** Der Cache läuft nach 1 Stunde automatisch ab.
+Für eine sofortige Aktualisierung bitte einen Entwickler kontaktieren.
+
+> Ein „Cache leeren"-Button im WordPress-Admin ist als eigener Roadmap-Punkt geplant
+> (zusammen mit der Admin-Einstellungsseite).
+
+---
 
 ## Projektstruktur
 
 ```
 kmc-eversports.php           WordPress-Plugin-Entry (Plugin-Header, Shortcode-Registrierung)
-src/                         Der Code des Projekts (Domäne)
-  ActivityParser.php           Liest die API-Antwort und baut Kursgruppen (validiert streng)
+src/                         Der Code des Projekts
+  EversportsClient.php         Holt Termine von der Eversports-API (paginiert, gecacht)
+  ActivityParser.php           Wandelt die API-Antwort in ClassGroup-Objekte um
   ActivityNode.php             Zwischen-Typ: eine flache Zeile aus der API-Antwort
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
-  MalformedActivitiesResponse.php  Fehler, wenn die API-Antwort nicht das erwartete Format hat
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten
@@ -137,7 +153,7 @@ spike/                       Erkundung der API: Notizen + gespeicherte echte Ant
 .devcontainer/               Definition der Entwicklungsumgebung (PHP + Node, Werkzeuge)
 .vscode/                     Editor-Einstellungen (Debugging, Format-on-Save)
 composer.json                PHP-Abhängigkeiten + Befehls-Kürzel (test/stan/cs)
-package.json                 Node-Abhängigkeiten + Befehls-Kürzel (start)
+package.json                 Node-Abhängigkeiten + Befehls-Kürzel (start/debug)
 phpunit.xml.dist             Test-Konfiguration
 phpstan.neon                 Konfiguration der statischen Analyse
 phpcs.xml.dist               Coding-Standard (PSR-12)
@@ -151,13 +167,11 @@ Der Code folgt „Clean Development". Wer hier weiterbaut, sollte sich daran hal
   Editor verlässliche Autovervollständigung und macht Fehler früh sichtbar.
 - **IOSP** (Integration/Operation Separation): Eine Methode tut *entweder* Logik
   (*Operation*) *oder* sie verdrahtet andere Methoden (*Integration*) — nicht beides
-  gemischt. Beispiel: `ActivityParser::parse()` verdrahtet nur; die Logik steckt in den
-  privaten Methoden `decodeGroups()` und `toClassGroups()`.
+  gemischt.
 - **Fail-fast:** Unerwartete API-Antworten werden nicht stillschweigend geschluckt,
   sondern werfen sofort eine klare Exception.
-- **Tests ohne „Mocks":** Logik wird über Unit-Tests abgesichert; an der einzigen externen
-  Grenze (die HTTP-API) wird später mit gespeicherten echten Antworten gearbeitet, nicht
-  mit künstlichen Attrappen.
+- **Keine defensive Programmierung:** Interne Verträge werden nicht doppelt abgesichert.
+  PHPStan-`@var`-Annotationen ersetzen Laufzeit-Checks an vertrauenswürdigen Grenzen.
 
 ## Glossar (kurz, für den Einstieg)
 
@@ -173,15 +187,13 @@ Der Code folgt „Clean Development". Wer hier weiterbaut, sollte sich daran hal
 - **Dev Container** – eine in Docker laufende, im Repo versionierte Entwicklungsumgebung.
   Jeder bekommt exakt dieselbe PHP-Version und dieselben Werkzeuge.
 - **Xdebug** – ermöglicht das schrittweise Durchlaufen des Codes mit Haltepunkten.
+- **Transient** – WordPress-Mechanismus für temporäres Caching mit TTL (Time To Live).
 
 ## Roadmap
 
-Bereits vorhanden: Dev-Umgebung (PHP + Node), der getestete API-Parser (Kursgruppen mit
-Terminen, Beschreibung, Bild), Plugin-Entry-Datei mit Platzhalter-Shortcode, lokales
-WordPress via wp-now, Qualitäts-Gates (Tests, statische Analyse, Coding-Standard).
-
-Noch offen:
-1. **Live-Anbindung** – `EversportsClient` (echter API-Aufruf), Shortcode gibt echte Daten aus.
-2. **HTML-Template + CSS** – gestaltete Ausgabe statt rohem Dump.
-3. **CI** (GitHub Actions): Tests/Analyse/Standard laufen automatisch bei jedem Push.
-4. **Umstellung („Cutover")** – altes Plugin + Scraper + Azure-Funktion ablösen.
+- ✅ **Dev-Umgebung** — PHP + Node im Dev-Container, lokales WordPress via wp-env mit Xdebug
+- ✅ **API-Anbindung** — `EversportsClient` mit Pagination, Caching und Fehlerbehandlung; `ActivityParser` mit typsicherer Verarbeitung; Shortcode gibt echte Daten aus
+- **HTML-Template + CSS** — gestaltete Ausgabe statt rohem Dump
+- **CI** (GitHub Actions) — Tests, statische Analyse und Coding-Standard laufen automatisch; Code-Coverage ≥ 90 %
+- **Admin-Einstellungsseite** — Token-Verwaltung und „Cache leeren"-Button im WordPress-Admin
+- **Cutover** — altes Plugin + Scraper + Azure-Funktion ablösen

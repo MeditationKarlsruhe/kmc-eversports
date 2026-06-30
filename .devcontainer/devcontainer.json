@@ -1,29 +1,29 @@
 {
-  // Name, der in VS Code unten links im Container-Badge erscheint.
   "name": "Kmc.Eversports (PHP)",
 
-  // Basis-Image: offizielles Microsoft-Devcontainer-Image mit PHP + Composer vorinstalliert.
-  // "1-8.2" = Devcontainer-Major 1, PHP 8.2. PHP-Version später an das KMC-Produktiv-WordPress angleichen.
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.2",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "runArgs": ["--privileged"],
 
   "features": {
-    // Node via nvm — umgeht die kaputte Yarn-apt-Quelle des Basis-Images.
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
-    }
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
   "postCreateCommand": "composer install && npm install",
 
   "customizations": {
     "vscode": {
-      // Extensions, die VS Code im Container automatisch installiert:
       "extensions": [
-        "bmewburn.vscode-intelephense-client", // PHP IntelliSense / Navigation / Refactoring
-        "editorconfig.editorconfig",           // einheitliche Formatierung über .editorconfig
-        "xdebug.php-debug",                    // Step-Debugging via Xdebug
-        "recca0120.vscode-phpunit",            // Test-Explorer: einzelne Tests per Klick laufen lassen
-        "ValeryanM.vscode-phpsab"              // phpcs/phpcbf: PSR-12-Squiggles + Format-on-Save über phpcs.xml.dist
+        "bmewburn.vscode-intelephense-client",
+        "editorconfig.editorconfig",
+        "xdebug.php-debug",
+        "recca0120.vscode-phpunit",
+        "ValeryanM.vscode-phpsab"
       ],
       "settings": {
         "intelephense.stubs": [
@@ -40,6 +40,4 @@
     }
   }
 
-  // Hinweis: "postCreateCommand": "composer install" kommt in Schritt 1,
-  // sobald eine composer.json existiert.
 }

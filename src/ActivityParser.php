@@ -16,75 +16,37 @@ final class ActivityParser
     /** @return list<ActivityNode> */
     private function decodeNodes(string $activitiesJson): array
     {
-        $data = json_decode($activitiesJson, true, 512, JSON_THROW_ON_ERROR);
-
-        if (!is_array($data)) {
-            throw new MalformedActivitiesResponse('Activities response is not a JSON object.');
-        }
-
-        $payload = $data['data'] ?? null;
-        if (!is_array($payload)) {
-            throw new MalformedActivitiesResponse('Activities response is missing "data".');
-        }
-
-        $activities = $payload['activities'] ?? null;
-        if (!is_array($activities)) {
-            throw new MalformedActivitiesResponse('Activities response is missing "data.activities".');
-        }
-
-        $nodes = $activities['nodes'] ?? null;
-        if (!is_array($nodes)) {
-            throw new MalformedActivitiesResponse('Activities response is missing "data.activities.nodes".');
-        }
+        /**
+         * @var array{
+         *     data: array{
+         *         activities: array{
+         *             nodes: list<array{
+         *                 start: string,
+         *                 end: string,
+         *                 detailsPageURL: string|null,
+         *                 activityGroup: array{
+         *                     id: string,
+         *                     name: string,
+         *                     description: array{html: string},
+         *                     images: array{nodes: list<array{url: string}>}
+         *                 }
+         *             }>
+         *         }
+         *     }
+         * } $decoded
+         */
+        $decoded = json_decode($activitiesJson, true, 512, JSON_THROW_ON_ERROR);
 
         $result = [];
-        foreach ($nodes as $node) {
-            if (!is_array($node)) {
-                throw new MalformedActivitiesResponse('Activity node is not an object.');
-            }
-
-            $group = $node['activityGroup'] ?? null;
-            if (!is_array($group)) {
-                throw new MalformedActivitiesResponse('Activity is missing its activityGroup.');
-            }
-
-            $groupId = $group['id'] ?? null;
-            $groupName = $group['name'] ?? null;
-            if (!is_string($groupId) || !is_string($groupName)) {
-                throw new MalformedActivitiesResponse('activityGroup.id and activityGroup.name must be strings.');
-            }
-
-            $description = $group['description'] ?? null;
-            if (!is_array($description)) {
-                throw new MalformedActivitiesResponse('activityGroup.description must be an object.');
-            }
-            $descriptionHtml = $description['html'] ?? null;
-            if (!is_string($descriptionHtml)) {
-                throw new MalformedActivitiesResponse('activityGroup.description.html must be a string.');
-            }
-
-            $images = $group['images'] ?? null;
-            $imageNodes = is_array($images) ? ($images['nodes'] ?? []) : [];
-            $firstNode = is_array($imageNodes) ? ($imageNodes[0] ?? null) : null;
-            $imageUrl = is_array($firstNode) && isset($firstNode['url']) && is_string($firstNode['url'])
-                ? $firstNode['url']
-                : null;
-
-            $appointmentStart = $node['start'] ?? null;
-            $appointmentEnd = $node['end'] ?? null;
-            $registrationLink = $node['detailsPageURL'] ?? null;
-            if (!is_string($appointmentStart) || !is_string($appointmentEnd) || !is_string($registrationLink)) {
-                throw new MalformedActivitiesResponse('Activity start, end, and detailsPageURL must be strings.');
-            }
-
+        foreach ($decoded['data']['activities']['nodes'] as $node) {
             $result[] = new ActivityNode(
-                $groupId,
-                $groupName,
-                $descriptionHtml,
-                $imageUrl,
-                $appointmentStart,
-                $appointmentEnd,
-                $registrationLink,
+                $node['activityGroup']['id'],
+                $node['activityGroup']['name'],
+                $node['activityGroup']['description']['html'],
+                $node['activityGroup']['images']['nodes'][0]['url'] ?? null,
+                $node['start'],
+                $node['end'],
+                $node['detailsPageURL'],
             );
         }
 

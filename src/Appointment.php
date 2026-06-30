@@ -9,7 +9,7 @@ final readonly class Appointment
     public function __construct(
         public \DateTimeImmutable $start,
         public \DateTimeImmutable $end,
-        public string $registrationLink,
+        public ?string $registrationLink,
     ) {
     }
 }

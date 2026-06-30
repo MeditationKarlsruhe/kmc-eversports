@@ -19,6 +19,9 @@ composer.phar
 # wp-env local overrides
 .wp-env.override.json
 
+# Claude Code local settings
+.claude/
+
 # IDE
 /.idea/
 /.vscode/*

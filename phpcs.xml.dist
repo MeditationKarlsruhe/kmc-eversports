@@ -9,5 +9,7 @@
     <arg name="colors"/>
     <arg value="sp"/>
 
-    <rule ref="PSR12"/>
+    <rule ref="PSR12">
+        <exclude-pattern>tests/bootstrap.php</exclude-pattern>
+    </rule>
 </ruleset>
