@@ -44,6 +44,11 @@ function esc_url(string $url): string
     return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
 }
 
+function esc_attr(string $text): string
+{
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
 function wp_kses_post(string $html): string
 {
     return $html;

@@ -10,7 +10,7 @@ declare(strict_types=1);
         <div class="kmc-event-group">
             <?php if ($showImage && $group->imageUrl !== null): ?>
                 <div class="kmc-event-group__image">
-                    <img src="<?php echo esc_url($group->imageUrl); ?>" alt="" />
+                    <img src="<?php echo esc_url($group->imageUrl); ?>" alt="<?php echo esc_attr($group->title); ?>" />
                 </div>
             <?php endif; ?>
 
