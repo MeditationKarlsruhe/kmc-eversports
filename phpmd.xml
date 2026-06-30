@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ruleset name="kmc-eversports"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+    <description>PHPMD ruleset for kmc-eversports.</description>
+
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <rule ref="rulesets/naming.xml">
+        <!-- Kurzname $id, $e etc. erlaubt -->
+        <exclude name="ShortVariable" />
+    </rule>
+
+    <rule ref="rulesets/codesize.xml" />
+
+    <rule ref="rulesets/design.xml">
+        <!-- exit; im Plugin-Entry-Point ist WordPress-Konvention -->
+        <exclude name="ExitExpression" />
+    </rule>
+
+</ruleset>
