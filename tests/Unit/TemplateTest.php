@@ -6,6 +6,7 @@ namespace Kmc\Eversports\Tests\Unit;
 
 use Kmc\Eversports\Appointment;
 use Kmc\Eversports\ClassGroup;
+use Kmc\Eversports\Tests\Utf8HtmlDriver;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -51,7 +52,7 @@ final class TemplateTest extends TestCase
 
         $html = $this->renderTemplate($groups, showImage: true);
 
-        $this->assertMatchesHtmlSnapshot($html);
+        $this->assertMatchesSnapshot($html, new Utf8HtmlDriver());
     }
 
     public function testItHidesImagesWhenShowImageIsFalse(): void
