@@ -24,6 +24,8 @@ add_action('wp_enqueue_scripts', function (): void {
     );
 });
 
+\Kmc\Eversports\AdminPage::register();
+
 add_action('init', function (): void {
     register_block_type(__DIR__ . '/block.json', [
         'render_callback' => [\Kmc\Eversports\Renderer::class, 'render'],

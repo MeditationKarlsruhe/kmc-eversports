@@ -12,31 +12,14 @@ use PHPUnit\Framework\TestCase;
 
 final class EversportsClientTest extends TestCase
 {
-    private string $secretsDir;
-    private string $secretsFile;
-    private bool $createdSecretsDir = false;
-
     protected function setUp(): void
     {
         parent::setUp();
         Monkey\setUp();
-        $this->secretsDir = dirname(__DIR__, 2) . '/.secrets';
-        $this->secretsFile = $this->secretsDir . '/eversports-api.txt';
-        if (!is_dir($this->secretsDir)) {
-            mkdir($this->secretsDir, 0755, true);
-            $this->createdSecretsDir = true;
-        }
-        file_put_contents($this->secretsFile, 'test-token');
     }
 
     protected function tearDown(): void
     {
-        if (file_exists($this->secretsFile)) {
-            unlink($this->secretsFile);
-        }
-        if ($this->createdSecretsDir && is_dir($this->secretsDir)) {
-            rmdir($this->secretsDir);
-        }
         Monkey\tearDown();
         parent::tearDown();
     }
@@ -60,6 +43,7 @@ final class EversportsClientTest extends TestCase
         );
 
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\expect('wp_remote_post')
             ->once()
             ->with(
@@ -96,6 +80,7 @@ final class EversportsClientTest extends TestCase
         $call = 0;
 
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\expect('wp_remote_post')
             ->twice()
             ->with(
@@ -117,6 +102,7 @@ final class EversportsClientTest extends TestCase
     public function testItThrowsOnWpError(): void
     {
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\when('wp_remote_post')->justReturn(new \WP_Error('http_error', 'Connection refused'));
 
         $this->expectException(\RuntimeException::class);
@@ -128,6 +114,7 @@ final class EversportsClientTest extends TestCase
     public function testItThrowsOnNon200Response(): void
     {
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\when('wp_remote_post')->justReturn($this->makeHttpResponse(500, 'Internal Server Error'));
 
         $this->expectException(\RuntimeException::class);
@@ -144,6 +131,7 @@ final class EversportsClientTest extends TestCase
         );
 
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('test-token');
         Functions\when('wp_remote_post')->justReturn($this->makeHttpResponse(200, $body));
 
         $this->expectException(\RuntimeException::class);
@@ -152,14 +140,13 @@ final class EversportsClientTest extends TestCase
         EversportsClient::fetchActivities();
     }
 
-    public function testItThrowsWhenSecretFileMissing(): void
+    public function testItThrowsWhenTokenIsNotConfigured(): void
     {
-        unlink($this->secretsFile);
-
         Functions\when('get_transient')->justReturn(false);
+        Functions\when('get_option')->justReturn('');
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('.secrets/eversports-api.txt is missing or not readable.');
+        $this->expectExceptionMessage('Eversports API token is not configured');
 
         EversportsClient::fetchActivities();
     }
