@@ -7,7 +7,7 @@ namespace Kmc\Eversports;
 final class EversportsClient
 {
     public const OPTION_TOKEN  = 'kmc_eversports_api_token';
-    public const TRANSIENT_KEY = 'eversports_activities';
+    public const ACTIVITIES_TRANSIENT_KEY = 'eversports_activities';
 
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
@@ -35,7 +35,7 @@ final class EversportsClient
 
     public static function fetchActivities(): string
     {
-        $cached = get_transient(self::TRANSIENT_KEY);
+        $cached = get_transient(self::ACTIVITIES_TRANSIENT_KEY);
         if (is_string($cached)) {
             return $cached;
         }
@@ -44,7 +44,7 @@ final class EversportsClient
             ['data' => ['activities' => ['nodes' => $nodes]]],
             JSON_THROW_ON_ERROR,
         );
-        set_transient(self::TRANSIENT_KEY, $json, HOUR_IN_SECONDS);
+        set_transient(self::ACTIVITIES_TRANSIENT_KEY, $json, HOUR_IN_SECONDS);
         return $json;
     }
 

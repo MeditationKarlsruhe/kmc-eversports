@@ -9,25 +9,25 @@ final class AdminPage
     private const NONCE_SAVE  = 'kmc_eversports_save';
     private const NONCE_CLEAR = 'kmc_eversports_clear_cache';
 
-    public function register(): void
+    public static function register(): void
     {
-        add_action('admin_menu', [$this, 'addMenuPage']);
-        add_action('admin_post_kmc_eversports_save', [$this, 'handleSave']);
-        add_action('admin_post_kmc_eversports_clear_cache', [$this, 'handleClearCache']);
+        add_action('admin_menu', [self::class, 'addMenuPage']);
+        add_action('admin_post_kmc_eversports_save', [self::class, 'handleSave']);
+        add_action('admin_post_kmc_eversports_clear_cache', [self::class, 'handleClearCache']);
     }
 
-    public function addMenuPage(): void
+    public static function addMenuPage(): void
     {
         add_options_page(
             'KMC Eversports',
             'KMC Eversports',
             'manage_options',
             'kmc-eversports',
-            [$this, 'renderPage'],
+            [self::class, 'renderPage'],
         );
     }
 
-    public function renderPage(): void
+    public static function renderPage(): void
     {
         if (!current_user_can('manage_options')) {
             wp_die('Zugriff verweigert.');
@@ -88,7 +88,7 @@ final class AdminPage
     }
 
     /** @SuppressWarnings(PHPMD.ExitExpression) */
-    public function handleSave(): void
+    public static function handleSave(): void
     {
         if (!current_user_can('manage_options')) {
             wp_die('Zugriff verweigert.');
@@ -107,14 +107,14 @@ final class AdminPage
     }
 
     /** @SuppressWarnings(PHPMD.ExitExpression) */
-    public function handleClearCache(): void
+    public static function handleClearCache(): void
     {
         if (!current_user_can('manage_options')) {
             wp_die('Zugriff verweigert.');
         }
 
         check_admin_referer(self::NONCE_CLEAR);
-        delete_transient(EversportsClient::TRANSIENT_KEY);
+        delete_transient(EversportsClient::ACTIVITIES_TRANSIENT_KEY);
         wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&cache_cleared=1'));
         exit;
     }

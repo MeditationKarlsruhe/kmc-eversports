@@ -35,7 +35,7 @@ final class AdminPageActionsTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        (new AdminPage())->handleSave();
+        AdminPage::handleSave();
     }
 
     public function testHandleSaveSavesTokenAndRedirects(): void
@@ -57,7 +57,7 @@ final class AdminPageActionsTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('redirect');
 
-        (new AdminPage())->handleSave();
+        AdminPage::handleSave();
     }
 
     public function testHandleSaveSkipsUpdateWhenTokenIsEmpty(): void
@@ -76,7 +76,7 @@ final class AdminPageActionsTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        (new AdminPage())->handleSave();
+        AdminPage::handleSave();
     }
 
     public function testHandleClearCacheDiesWhenUnauthorized(): void
@@ -89,7 +89,7 @@ final class AdminPageActionsTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        (new AdminPage())->handleClearCache();
+        AdminPage::handleClearCache();
     }
 
     public function testHandleClearCacheDeletesTransientAndRedirects(): void
@@ -101,13 +101,13 @@ final class AdminPageActionsTest extends TestCase
         Functions\when('admin_url')->justReturn($redirectUrl);
         Functions\expect('delete_transient')
             ->once()
-            ->with(EversportsClient::TRANSIENT_KEY);
+            ->with(EversportsClient::ACTIVITIES_TRANSIENT_KEY);
         Functions\expect('wp_safe_redirect')
             ->once()
             ->andThrow(new \RuntimeException('redirect'));
 
         $this->expectException(\RuntimeException::class);
 
-        (new AdminPage())->handleClearCache();
+        AdminPage::handleClearCache();
     }
 }

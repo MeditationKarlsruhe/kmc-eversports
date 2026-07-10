@@ -28,7 +28,7 @@ final class AdminPageTest extends TestCase
     {
         Functions\expect('add_action')->times(3);
 
-        (new AdminPage())->register();
+        AdminPage::register();
 
         $this->addToAssertionCount(1);
     }
@@ -39,7 +39,7 @@ final class AdminPageTest extends TestCase
             ->once()
             ->with('KMC Eversports', 'KMC Eversports', 'manage_options', 'kmc-eversports', \Mockery::type('array'));
 
-        (new AdminPage())->addMenuPage();
+        AdminPage::addMenuPage();
 
         $this->addToAssertionCount(1);
     }
@@ -54,12 +54,7 @@ final class AdminPageTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        ob_start();
-        try {
-            (new AdminPage())->renderPage();
-        } finally {
-            ob_end_clean();
-        }
+        AdminPage::renderPage();
     }
 
     public function testRenderPageShowsForms(): void
@@ -70,7 +65,7 @@ final class AdminPageTest extends TestCase
         Functions\when('wp_nonce_field')->justReturn('');
 
         ob_start();
-        (new AdminPage())->renderPage();
+        AdminPage::renderPage();
         $output = (string) ob_get_clean();
 
         self::assertStringContainsString('value="kmc_eversports_save"', $output);
@@ -88,7 +83,7 @@ final class AdminPageTest extends TestCase
         Functions\when('wp_nonce_field')->justReturn('');
 
         ob_start();
-        (new AdminPage())->renderPage();
+        AdminPage::renderPage();
         $output = (string) ob_get_clean();
 
         self::assertStringContainsString('Einstellungen gespeichert', $output);
@@ -104,7 +99,7 @@ final class AdminPageTest extends TestCase
         Functions\when('wp_nonce_field')->justReturn('');
 
         ob_start();
-        (new AdminPage())->renderPage();
+        AdminPage::renderPage();
         $output = (string) ob_get_clean();
 
         self::assertStringContainsString('Cache geleert', $output);
@@ -118,7 +113,7 @@ final class AdminPageTest extends TestCase
         Functions\when('wp_nonce_field')->justReturn('');
 
         ob_start();
-        (new AdminPage())->renderPage();
+        AdminPage::renderPage();
         $output = (string) ob_get_clean();
 
         self::assertStringContainsString('Token ist gespeichert', $output);
