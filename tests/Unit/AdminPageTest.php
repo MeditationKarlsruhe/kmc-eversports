@@ -75,7 +75,7 @@ final class AdminPageTest extends TestCase
 
     public function testRenderPageShowsUpdatedNotice(): void
     {
-        $_GET['updated'] = '1';
+        $_GET['kmc_updated'] = '1';
 
         Functions\when('current_user_can')->justReturn(true);
         Functions\when('get_option')->justReturn('');

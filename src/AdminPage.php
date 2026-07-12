@@ -41,7 +41,7 @@ final class AdminPage
         <div class="wrap">
             <h1>KMC Eversports</h1>
 
-            <?php if (isset($_GET['updated'])) : ?>
+            <?php if (isset($_GET['kmc_updated'])) : ?>
                 <div class="notice notice-success is-dismissible"><p>Einstellungen gespeichert.</p></div>
             <?php endif; ?>
             <?php if (isset($_GET['cache_cleared'])) : ?>
@@ -102,7 +102,9 @@ final class AdminPage
             update_option(EversportsClient::OPTION_TOKEN, $token);
         }
 
-        wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&updated=1'));
+        // Not "updated" — that key triggers WP core's own English "Settings saved." notice
+        // for any options-general.php submenu (see wp-admin/options-head.php back-compat check).
+        wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&kmc_updated=1'));
         exit;
     }
 
