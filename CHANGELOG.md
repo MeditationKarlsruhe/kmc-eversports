@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- REST endpoint `GET /wp-json/kmc-eversports/v1/groups` — lists active Eversports groups (id, name) for the block editor, backed by a dedicated `activityGroups` GraphQL query (`EversportsClient::fetchGroups()`, own 1-hour transient cache)
+- `groupIds` attribute on the `kmc/eversports-events` block — content editors pick one or more groups via a checkbox list in the Inspector Controls; at least one group must be selected, the block renders nothing otherwise
+
+### Changed
+
+- `EversportsClient`'s HTTP/GraphQL transport (`request()`/`buildRequestPayload()`) generalized into `postGraphQL(query, variables)`, shared by the activities and groups queries
+- "Cache leeren" now also clears the groups cache
+
 ## [2.0.0] - 2026-06-30
 
 ### Changed

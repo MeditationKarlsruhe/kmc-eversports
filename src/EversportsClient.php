@@ -8,6 +8,7 @@ final class EversportsClient
 {
     public const OPTION_TOKEN  = 'kmc_eversports_api_token';
     public const ACTIVITIES_TRANSIENT_KEY = 'eversports_activities';
+    public const GROUPS_TRANSIENT_KEY = 'eversports_groups';
 
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
@@ -33,6 +34,15 @@ final class EversportsClient
         }
     ';
 
+    private const GROUPS_QUERY = '
+        query($after: Cursor) {
+            activityGroups(first: 50, after: $after, publicationStates: [ACTIVE]) {
+                pageInfo { hasNextPage endCursor }
+                nodes { id name }
+            }
+        }
+    ';
+
     public static function fetchActivities(): string
     {
         $cached = get_transient(self::ACTIVITIES_TRANSIENT_KEY);
@@ -48,12 +58,34 @@ final class EversportsClient
         return $json;
     }
 
+    public static function fetchGroups(): string
+    {
+        $cached = get_transient(self::GROUPS_TRANSIENT_KEY);
+        if (is_string($cached)) {
+            return $cached;
+        }
+        $nodes = self::fetchAllGroupNodes();
+        $json = json_encode(
+            ['data' => ['activityGroups' => ['nodes' => $nodes]]],
+            JSON_THROW_ON_ERROR,
+        );
+        set_transient(self::GROUPS_TRANSIENT_KEY, $json, HOUR_IN_SECONDS);
+        return $json;
+    }
+
     /** @return list<mixed> */
     private static function fetchAllNodes(): array
     {
         $allNodes = [];
         $after = null;
+        $timezone = new \DateTimeZone('Europe/Berlin');
         do {
+            $variables = [
+                'startDate' => (new \DateTimeImmutable('today', $timezone))->format('c'),
+                'endDate'   => (new \DateTimeImmutable('+52 weeks', $timezone))->format('c'),
+                'after'     => $after,
+            ];
+
             /**
              * @var array{
              *     data: array{
@@ -64,7 +96,7 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode(self::request($after), true, 512, JSON_THROW_ON_ERROR);
+            $page = json_decode(self::postGraphQL(self::QUERY, $variables), true, 512, JSON_THROW_ON_ERROR);
             $activities = $page['data']['activities'];
             array_push($allNodes, ...$activities['nodes']);
             $hasNextPage = $activities['pageInfo']['hasNextPage'];
@@ -73,14 +105,48 @@ final class EversportsClient
         return $allNodes;
     }
 
-    private static function request(?string $after): string
+    /** @return list<mixed> */
+    private static function fetchAllGroupNodes(): array
+    {
+        $allNodes = [];
+        $after = null;
+        do {
+            /**
+             * @var array{
+             *     data: array{
+             *         activityGroups: array{
+             *             pageInfo: array{hasNextPage: bool, endCursor: string|null},
+             *             nodes: list<mixed>
+             *         }
+             *     }
+             * } $page
+             */
+            $page = json_decode(
+                self::postGraphQL(self::GROUPS_QUERY, ['after' => $after]),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+            $groups = $page['data']['activityGroups'];
+            array_push($allNodes, ...$groups['nodes']);
+            $hasNextPage = $groups['pageInfo']['hasNextPage'];
+            $after = $groups['pageInfo']['endCursor'];
+        } while ($hasNextPage);
+        return $allNodes;
+    }
+
+    /** @param array<string, mixed> $variables */
+    private static function postGraphQL(string $query, array $variables): string
     {
         $response = wp_remote_post(self::ENDPOINT, [
             'headers' => [
                 'Content-Type'  => 'application/json',
                 'Authorization' => 'Bearer ' . self::bearerToken(),
             ],
-            'body' => self::buildRequestPayload($after),
+            'body' => json_encode(
+                ['query' => $query, 'variables' => $variables],
+                JSON_THROW_ON_ERROR,
+            ),
         ]);
 
         if (is_wp_error($response)) {
@@ -97,21 +163,6 @@ final class EversportsClient
         self::assertNoGraphQLErrors($responseBody);
 
         return $responseBody;
-    }
-
-    private static function buildRequestPayload(?string $after): string
-    {
-        $timezone = new \DateTimeZone('Europe/Berlin');
-        $variables = [
-            'startDate' => (new \DateTimeImmutable('today', $timezone))->format('c'),
-            'endDate'   => (new \DateTimeImmutable('+52 weeks', $timezone))->format('c'),
-            'after'     => $after,
-        ];
-
-        return json_encode(
-            ['query' => self::QUERY, 'variables' => $variables],
-            JSON_THROW_ON_ERROR,
-        );
     }
 
     private static function assertNoGraphQLErrors(string $responseBody): void

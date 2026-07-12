@@ -102,6 +102,9 @@ final class AdminPageActionsTest extends TestCase
         Functions\expect('delete_transient')
             ->once()
             ->with(EversportsClient::ACTIVITIES_TRANSIENT_KEY);
+        Functions\expect('delete_transient')
+            ->once()
+            ->with(EversportsClient::GROUPS_TRANSIENT_KEY);
         Functions\expect('wp_safe_redirect')
             ->once()
             ->andThrow(new \RuntimeException('redirect'));

@@ -24,6 +24,24 @@ function is_wp_error(mixed $thing): bool
     return $thing instanceof WP_Error;
 }
 
+class WP_REST_Response
+{
+    public function __construct(
+        private readonly mixed $data = null,
+        private readonly int $status = 200,
+    ) {}
+
+    public function get_data(): mixed
+    {
+        return $this->data;
+    }
+
+    public function get_status(): int
+    {
+        return $this->status;
+    }
+}
+
 function wp_remote_retrieve_response_code(array $response): int
 {
     return (int) ($response['response']['code'] ?? 0);

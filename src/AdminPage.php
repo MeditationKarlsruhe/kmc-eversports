@@ -115,6 +115,7 @@ final class AdminPage
 
         check_admin_referer(self::NONCE_CLEAR);
         delete_transient(EversportsClient::ACTIVITIES_TRANSIENT_KEY);
+        delete_transient(EversportsClient::GROUPS_TRANSIENT_KEY);
         wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&cache_cleared=1'));
         exit;
     }
