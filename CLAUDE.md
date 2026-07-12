@@ -65,6 +65,16 @@ PHP 8.2. Container name changes on rebuild — find it with:
 docker ps --format "{{.Names}} {{.Image}}" | grep php
 ```
 
+## Worktrees
+
+This repo is edited both from the Windows host and from inside the Dev Container (different mount roots: `D:\KMC\kmc-eversports\...` vs. `/workspaces/kmc-eversports/...`). `git worktree add` writes an absolute gitdir path by default, which only resolves in the environment it was created from — a worktree created from the host won't be recognized as a repo when opened from the container, and vice versa.
+
+Always create worktrees with `--relative-paths` (or rely on the repo-local `worktree.useRelativePaths = true` config, already set), so the `.git` pointer file is relative and resolves from either environment:
+
+```bash
+git worktree add --relative-paths .claude/worktrees/<name> <branch>
+```
+
 ## Roadmap
 
 - ✅ Dev environment (PHP + Node Dev Container, wp-env with Xdebug)
