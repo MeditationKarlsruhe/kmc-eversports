@@ -75,7 +75,7 @@ final class AdminPageTest extends TestCase
 
     public function testRenderPageShowsUpdatedNotice(): void
     {
-        $_GET['updated'] = '1';
+        $_GET['kmc_updated'] = '1';
 
         Functions\when('current_user_can')->justReturn(true);
         Functions\when('get_option')->justReturn('');
@@ -91,7 +91,7 @@ final class AdminPageTest extends TestCase
 
     public function testRenderPageShowsCacheClearedNotice(): void
     {
-        $_GET['cache_cleared'] = '1';
+        $_GET['kmc_cache_cleared'] = '1';
 
         Functions\when('current_user_can')->justReturn(true);
         Functions\when('get_option')->justReturn('');
