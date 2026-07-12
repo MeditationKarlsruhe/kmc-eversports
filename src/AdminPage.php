@@ -102,8 +102,6 @@ final class AdminPage
             update_option(EversportsClient::OPTION_TOKEN, $token);
         }
 
-        // Not "updated" — that key triggers WP core's own English "Settings saved." notice
-        // for any options-general.php submenu (see wp-admin/options-head.php back-compat check).
         wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&kmc_updated=1'));
         exit;
     }
