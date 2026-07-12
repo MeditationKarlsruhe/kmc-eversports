@@ -44,7 +44,7 @@ final class AdminPage
             <?php if (isset($_GET['kmc_updated'])) : ?>
                 <div class="notice notice-success is-dismissible"><p>Einstellungen gespeichert.</p></div>
             <?php endif; ?>
-            <?php if (isset($_GET['cache_cleared'])) : ?>
+            <?php if (isset($_GET['kmc_cache_cleared'])) : ?>
                 <div class="notice notice-success is-dismissible"><p>Cache geleert.</p></div>
             <?php endif; ?>
 
@@ -117,7 +117,7 @@ final class AdminPage
 
         check_admin_referer(self::NONCE_CLEAR);
         delete_transient(EversportsClient::ACTIVITIES_TRANSIENT_KEY);
-        wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&cache_cleared=1'));
+        wp_safe_redirect(admin_url('options-general.php?page=kmc-eversports&kmc_cache_cleared=1'));
         exit;
     }
 }
