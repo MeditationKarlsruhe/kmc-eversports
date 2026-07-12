@@ -58,7 +58,7 @@ final class EversportsClientTest extends TestCase
             ->andReturn($response);
         Functions\expect('set_transient')
             ->once()
-            ->with('eversports_activities', Mockery::type('string'), HOUR_IN_SECONDS)
+            ->with('kmc_eversports_activities', Mockery::type('string'), HOUR_IN_SECONDS)
             ->andReturn(true);
 
         $result = EversportsClient::fetchActivities();
@@ -181,7 +181,7 @@ final class EversportsClientTest extends TestCase
             ->andReturn($response);
         Functions\expect('set_transient')
             ->once()
-            ->with('eversports_groups', Mockery::type('string'), HOUR_IN_SECONDS)
+            ->with('kmc_eversports_groups', Mockery::type('string'), HOUR_IN_SECONDS)
             ->andReturn(true);
 
         $result = EversportsClient::fetchGroups();

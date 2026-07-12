@@ -32,4 +32,22 @@ final class GroupsParserTest extends TestCase
 
         self::assertSame([], $groups);
     }
+
+    public function testItSortsGroupsAlphabeticallyCaseInsensitive(): void
+    {
+        $json = json_encode([
+            'data' => ['activityGroups' => ['nodes' => [
+                ['id' => '1', 'name' => 'Zazen'],
+                ['id' => '2', 'name' => 'anfängerkurs'],
+                ['id' => '3', 'name' => 'Meditation'],
+            ]]],
+        ], JSON_THROW_ON_ERROR);
+
+        $groups = GroupsParser::parse($json);
+
+        self::assertSame(
+            ['anfängerkurs', 'Meditation', 'Zazen'],
+            array_map(static fn (GroupSummary $group): string => $group->name, $groups),
+        );
+    }
 }

@@ -25,6 +25,8 @@ final class GroupsParser
             $result[] = new GroupSummary($node['id'], $node['name']);
         }
 
+        usort($result, static fn (GroupSummary $a, GroupSummary $b): int => strnatcasecmp($a->name, $b->name));
+
         return $result;
     }
 }

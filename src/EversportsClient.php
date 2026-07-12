@@ -7,8 +7,10 @@ namespace Kmc\Eversports;
 final class EversportsClient
 {
     public const OPTION_TOKEN  = 'kmc_eversports_api_token';
-    public const ACTIVITIES_TRANSIENT_KEY = 'eversports_activities';
-    public const GROUPS_TRANSIENT_KEY = 'eversports_groups';
+
+    private const TRANSIENT_PREFIX = 'kmc_eversports_';
+    public const ACTIVITIES_TRANSIENT_KEY = self::TRANSIENT_PREFIX . 'activities';
+    public const GROUPS_TRANSIENT_KEY = self::TRANSIENT_PREFIX . 'groups';
 
     private const ENDPOINT = 'https://provider-api.eversportsmanager.io/api/graphql';
 
