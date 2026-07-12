@@ -94,7 +94,7 @@ final class AdminPageActionsTest extends TestCase
 
     public function testHandleClearCacheDeletesTransientAndRedirects(): void
     {
-        $redirectUrl = 'http://example.com/wp-admin/options-general.php?page=kmc-eversports&cache_cleared=1';
+        $redirectUrl = 'http://example.com/wp-admin/options-general.php?page=kmc-eversports&kmc_cache_cleared=1';
 
         Functions\when('current_user_can')->justReturn(true);
         Functions\when('check_admin_referer')->justReturn(1);
