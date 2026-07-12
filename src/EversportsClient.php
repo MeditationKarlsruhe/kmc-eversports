@@ -21,7 +21,8 @@ final class EversportsClient
                 after: $after,
                 timeRange: { start: $startDate, end: $endDate },
                 isCancelled: false,
-                isArchived: false
+                isArchived: false,
+                activityGroupPublicationStates: [ACTIVE]
             ) {
                 pageInfo { hasNextPage endCursor }
                 nodes {
