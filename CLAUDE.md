@@ -46,6 +46,10 @@ ActivityParser  →  ClassGroup[]  →  [eversports-events] shortcode  →  HTML
 
 **`tests/Unit/`:** PHPUnit + Brain\Monkey (WP mocks) + Spatie snapshot assertions.
 
+## Testing Policy
+
+Verification is limited to the automated checks: `composer test`, `composer stan`, `composer cs`, `composer mess`. Do not start `wp-env` (`npm start`) or perform manual browser verification of a change — Felix does that himself. This overrides any general guidance elsewhere to test UI changes in a browser before reporting completion.
+
 ## Design Principles
 
 - `declare(strict_types=1)` everywhere
