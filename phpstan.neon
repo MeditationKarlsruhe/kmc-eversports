@@ -6,6 +6,7 @@ parameters:
     paths:
         - src
         - tests
+        - templates
         - kmc-eversports.php
     excludePaths:
         - tests/bootstrap.php
