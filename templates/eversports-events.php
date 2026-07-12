@@ -6,9 +6,9 @@ declare(strict_types=1);
 /** @var bool $showImage */
 ?>
 <div class="kmc-eversports-events">
-    <?php foreach ($groups as $group): ?>
+    <?php foreach ($groups as $group) : ?>
         <div class="kmc-event-group">
-            <?php if ($showImage && $group->imageUrl !== null): ?>
+            <?php if ($showImage && $group->imageUrl !== null) : ?>
                 <div class="kmc-event-group__image">
                     <img src="<?php echo esc_url($group->imageUrl); ?>" alt="<?php echo esc_attr($group->title); ?>" />
                 </div>
@@ -23,7 +23,7 @@ declare(strict_types=1);
             </div>
 
             <div class="kmc-event-group__appointments">
-                <?php foreach ($group->appointments as $appointment): ?>
+                <?php foreach ($group->appointments as $appointment) : ?>
                     <div class="kmc-appointment">
                         <span class="kmc-appointment__date">
                             <?php echo esc_html($appointment->start->format('d.m.Y')); ?>
@@ -33,7 +33,7 @@ declare(strict_types=1);
                                 $appointment->start->format('H:i') . ' – ' . $appointment->end->format('H:i')
                             ); ?>
                         </span>
-                        <?php if ($appointment->registrationLink !== null): ?>
+                        <?php if ($appointment->registrationLink !== null) : ?>
                             <a
                                 class="kmc-appointment__register"
                                 href="<?php echo esc_url($appointment->registrationLink); ?>"
