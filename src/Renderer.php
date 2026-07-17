@@ -13,10 +13,18 @@ final class Renderer
     public static function render(array $attributes): string
     {
         $showImage = $attributes['showImages'] ?? true;
+        $groupIds = $attributes['groupIds'] ?? [];
 
         try {
+            if (!is_array($groupIds) || $groupIds === []) {
+                throw new \RuntimeException('At least one group must be selected.');
+            }
+
             $json = EversportsClient::fetchActivities();
-            $groups = ActivityParser::parse($json);
+            $groups = array_values(array_filter(
+                ActivityParser::parse($json),
+                static fn (ClassGroup $group): bool => in_array($group->id, $groupIds, true),
+            ));
         } catch (\Throwable $e) {
             error_log('KMC Eversports: ' . $e->getMessage());
             if (defined('WP_DEBUG') && WP_DEBUG) {

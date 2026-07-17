@@ -8,6 +8,13 @@
         "showImages": {
             "type": "boolean",
             "default": true
+        },
+        "groupIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
         }
     },
     "supports": {
