@@ -31,7 +31,8 @@
         "stan": "phpstan analyse --memory-limit=512M",
         "cs": "phpcs",
         "cs:fix": "phpcbf",
-        "mess": "phpmd src,tests,templates text phpmd.xml"
+        "mess": "phpmd src,tests,templates text phpmd.xml",
+        "release": "bash bin/release.sh"
     },
     "config": {
         "sort-packages": true

@@ -87,6 +87,7 @@ Geheimnis und gehört **niemals ins Repository**.
 | `composer cs` | prüft den Coding-Standard (PSR-12) |
 | `composer cs:fix` | korrigiert Formatierungs-Verstöße automatisch |
 | `composer mess` | prüft auf Code Smells (PHPMD: Komplexität, Benennung, ungenutzte Variablen) |
+| `composer release` | führt interaktiv durch einen Release (siehe [Release erstellen](#release-erstellen)) |
 | `npm start` | startet WordPress lokal (Port 8881) |
 | `npm run debug` | startet WordPress lokal mit aktiviertem Xdebug (Port 9003) |
 
@@ -143,18 +144,22 @@ Ein Release macht das Plugin als installationsfertiges ZIP verfügbar — für d
 Upload in einem frischen WordPress, und als Quelle für automatische Update-Benachrichtigungen
 auf bereits installierten Instanzen.
 
-1. Einträge unter `[Unreleased]` in `CHANGELOG.md` in eine neue, versionierte Sektion
-   verschieben (z. B. `## [2.1.0] - 2026-07-20`).
-2. `Version:`-Header in `kmc-eversports.php` auf dieselbe Nummer setzen.
-3. Beides committen und auf `main` pushen.
-4. Tag setzen und pushen:
-   ```bash
-   git tag v2.1.0
-   git push --tags
-   ```
+```bash
+composer release
+```
 
-Der Tag löst `.github/workflows/release.yml` aus: baut das Plugin (Composer + npm),
-verpackt die Laufzeitdateien als ZIP und veröffentlicht ein GitHub Release mit dem ZIP als
+Führt interaktiv durch den ganzen Ablauf: prüft, dass `main` sauber und synchron mit
+`origin/main` ist, schlägt anhand der `[Unreleased]`-Einträge eine neue Versionsnummer vor
+(`### Added` vorhanden → Minor, sonst Patch — jederzeit überschreibbar), benennt die
+`[Unreleased]`-Sektion in `CHANGELOG.md` in die neue Version um und legt eine frische leere
+`[Unreleased]`-Sektion darüber an, setzt den `Version:`-Header in `kmc-eversports.php`,
+committet und taggt lokal — und fragt vor jedem der beiden folgenreichen Schritte (lokale
+Änderung, Push) einzeln nach Bestätigung. Bricht ohne Änderungen ab, falls `[Unreleased]`
+leer ist, `main` nicht sauber/synchron ist, oder die eingegebene Version ungültig ist.
+
+Der finale Tag-Push löst `.github/workflows/release.yml` aus: baut das Plugin (Composer +
+npm), verpackt die Laufzeitdateien als ZIP, extrahiert den passenden Abschnitt aus
+`CHANGELOG.md` als Release-Beschreibung und veröffentlicht ein GitHub Release mit dem ZIP als
 Anhang. Weicht die Tag-Nummer vom `Version:`-Header ab, bricht der Workflow ab, statt ein
 falsch versioniertes Release zu erzeugen.
 
