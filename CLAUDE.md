@@ -80,6 +80,7 @@ git worktree add --relative-paths .claude/worktrees/<name> <branch>
 - ✅ Dev environment (PHP + Node Dev Container, wp-env with Xdebug)
 - ✅ API integration (`EversportsClient`, `ActivityParser`, Shortcode outputting real data)
 - HTML template + CSS — styled output
-- **CI** (GitHub Actions) — tests, static analysis, coding standard; coverage ≥ 90 %
+- ✅ CI (GitHub Actions) — tests, static analysis, coding standard; coverage ≥ 90 %
+- ✅ CD (GitHub Actions) — tag-triggered plugin ZIP + GitHub Release, auto-update notifications via Plugin Update Checker
 - Admin settings page — token management + "clear cache" button
 - Cutover — retire old plugin + scraper + Azure Function

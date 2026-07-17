@@ -12,3 +12,6 @@ parameters:
         - tests/bootstrap.php
     ignoreErrors:
         - '#PHPDoc tag @SuppressWarnings has invalid value#'
+        -
+            message: '#Call to an undefined method YahnisElsts\\PluginUpdateChecker\\.*::(getVcsApi|enableReleaseAssets)\(\)#'
+            path: kmc-eversports.php

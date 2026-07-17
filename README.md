@@ -137,6 +137,34 @@ Für eine sofortige Aktualisierung bitte einen Entwickler kontaktieren.
 
 ---
 
+## Release erstellen
+
+Ein Release macht das Plugin als installationsfertiges ZIP verfügbar — für den manuellen
+Upload in einem frischen WordPress, und als Quelle für automatische Update-Benachrichtigungen
+auf bereits installierten Instanzen.
+
+1. Einträge unter `[Unreleased]` in `CHANGELOG.md` in eine neue, versionierte Sektion
+   verschieben (z. B. `## [2.1.0] - 2026-07-20`).
+2. `Version:`-Header in `kmc-eversports.php` auf dieselbe Nummer setzen.
+3. Beides committen und auf `main` pushen.
+4. Tag setzen und pushen:
+   ```bash
+   git tag v2.1.0
+   git push --tags
+   ```
+
+Der Tag löst `.github/workflows/release.yml` aus: baut das Plugin (Composer + npm),
+verpackt die Laufzeitdateien als ZIP und veröffentlicht ein GitHub Release mit dem ZIP als
+Anhang. Weicht die Tag-Nummer vom `Version:`-Header ab, bricht der Workflow ab, statt ein
+falsch versioniertes Release zu erzeugen.
+
+**Erstinstallation** (frisches WordPress): ZIP vom GitHub Release herunterladen, dann
+*wp-admin → Plugins → Installieren → Datei hochladen*.
+
+**Updates auf bereits installierten Instanzen**: erscheinen automatisch unter
+*wp-admin → Dashboard → Aktualisierungen*, sobald ein neues Release existiert — kein erneuter
+manueller Download nötig.
+
 ## Projektstruktur
 
 ```
@@ -191,3 +219,10 @@ Der Code folgt „Clean Development". Wer hier weiterbaut, sollte sich daran hal
   Jeder bekommt exakt dieselbe PHP-Version und dieselben Werkzeuge.
 - **Xdebug** – ermöglicht das schrittweise Durchlaufen des Codes mit Haltepunkten.
 - **Transient** – WordPress-Mechanismus für temporäres Caching mit TTL (Time To Live).
+- **Git-Tag** – eine feste Markierung auf einem bestimmten Commit, meist für Versionsnummern
+  (`v2.1.0`). Anders als ein Branch bewegt sich ein Tag nicht mehr, sobald er gesetzt ist.
+- **GitHub Release** – eine veröffentlichte Version des Projekts auf GitHub, verknüpft mit
+  einem Tag; kann Dateien (*Assets*, hier: das Plugin-ZIP) zum Download bereitstellen.
+- **Update Checker** – Bibliothek ([Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker)),
+  die WordPress beibringt, bei GitHub Releases nach neuen Versionen zu schauen, obwohl das
+  Plugin nicht bei wordpress.org gelistet ist.
