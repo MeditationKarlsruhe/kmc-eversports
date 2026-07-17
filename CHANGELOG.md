@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-07-17
+
 ### Added
 
 - REST endpoint `GET /wp-json/kmc-eversports/v1/groups` — lists active Eversports groups (id, name) for the block editor, backed by a dedicated `activityGroups` GraphQL query (`EversportsClient::fetchGroups()`, own 1-hour transient cache)
