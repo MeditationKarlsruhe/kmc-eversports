@@ -40,7 +40,7 @@ echo
 echo "== Aktuellen Stand lesen =="
 
 current_version="$(grep -oP '(?<=Version:\s)[0-9][0-9A-Za-z.\-]*' "$plugin_file")"
-unreleased="$(bin/changelog-section.sh Unreleased)"
+unreleased="$(bash bin/changelog-section.sh Unreleased)"
 
 if [ -z "$(echo "$unreleased" | tr -d '[:space:]')" ]; then
     echo "Fehler: Nichts zu releasen — [Unreleased] in $changelog_file ist leer." >&2
@@ -108,7 +108,7 @@ sed -i "s/^ \* Version:.*/ * Version: $new_version/" "$plugin_file"
 
 git add "$changelog_file" "$plugin_file"
 git commit -m "chore: release v$new_version" --quiet
-git tag -a "v$new_version" --cleanup=verbatim -m "$(bin/changelog-section.sh "$new_version")"
+git tag -a "v$new_version" --cleanup=verbatim -m "$(bash bin/changelog-section.sh "$new_version")"
 
 recovery_hint() {
     echo
