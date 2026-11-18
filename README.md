@@ -22,13 +22,15 @@ Eversports GraphQL-API
 EversportsClient  →  JSON (gecacht, 1h TTL)
         │
         ▼
-ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block → HTML
+ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block / Shortcode → HTML
 ```
 
 - `EversportsClient` holt alle Termine der nächsten 52 Wochen (paginiert, max. 50 pro
   Request) und legt das Ergebnis als WordPress-Transient für 1 Stunde zwischen.
 - `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
 - Der Gutenberg-Block „Eversports Events" (`kmc/eversports-events`) rendert die Gruppen als HTML.
+- Für Seiten ohne Block-Editor (z. B. mit dem Avia Layout Builder von Enfold) gibt es dieselbe
+  Ausgabe als Shortcode `[eversports-events]` (siehe [Shortcode](#shortcode)).
 
 ---
 
@@ -104,6 +106,26 @@ Ablauf beim ersten Start:
 1. Plugin „KMC Eversports" unter *Plugins* aktivieren.
 2. Unter *Einstellungen → KMC Eversports* den API-Token eintragen.
 3. Eine neue Seite anlegen, den Block „Eversports Events" einfügen, Seite aufrufen.
+
+#### Shortcode
+
+Wo kein Block-Editor zur Verfügung steht — etwa auf Seiten, die mit dem **Avia Layout Builder**
+(Enfold) gebaut sind —, lässt sich der Kursplan als Shortcode einfügen, z. B. in ein
+Avia-„Text Block"-Element:
+
+```
+[eversports-events group-ids="46917fab-f6ce-45ce-8235-97a5b65a5368,7d908db9-fbf8-4754-9c13-9da915e705fa" show-image="true"]
+```
+
+| Attribut | Bedeutung |
+|---|---|
+| `group-ids` | Pflicht. Kommagetrennte Eversports-Gruppen-IDs (UUIDs), Leerzeichen sind egal. Die IDs liefert `GET /wp-json/kmc-eversports/v1/groups`. Ohne IDs rendert der Shortcode nichts. |
+| `show-image` | Optional, Standard `true`. Jeder andere Wert blendet die Bilder aus. |
+
+Der Shortcode rendert genau dasselbe wie der Block mit denselben Einstellungen.
+
+> **Umstieg vom alten Plugin:** Name und Attribute sind gleich, die **IDs aber nicht** — das alte
+> Plugin nutzte Zahlen-IDs aus dem Scraper, das neue nutzt die UUIDs der Eversports-API.
 
 #### Enfold-Theme (optional, wie auf der Live-Seite)
 
@@ -188,13 +210,14 @@ manueller Download nötig.
 ## Projektstruktur
 
 ```
-kmc-eversports.php           WordPress-Plugin-Entry (Plugin-Header, Shortcode-Registrierung)
+kmc-eversports.php           WordPress-Plugin-Entry (Plugin-Header, Block- und Shortcode-Registrierung)
 src/                         Der Code des Projekts
   EversportsClient.php         Holt Termine von der Eversports-API (paginiert, gecacht)
   ActivityParser.php           Wandelt die API-Antwort in ClassGroup-Objekte um
   ActivityNode.php             Zwischen-Typ: eine flache Zeile aus der API-Antwort
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
+  EventsShortcode.php          Shortcode [eversports-events] → gleiche Ausgabe wie der Block
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten

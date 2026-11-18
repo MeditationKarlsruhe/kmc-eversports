@@ -38,6 +38,7 @@ add_action('wp_enqueue_scripts', function (): void {
 
 \Kmc\Eversports\AdminPage::register();
 \Kmc\Eversports\GroupsEndpoint::register();
+\Kmc\Eversports\EventsShortcode::register();
 
 add_action('init', function (): void {
     register_block_type(__DIR__ . '/block.json', [
