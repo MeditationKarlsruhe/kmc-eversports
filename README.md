@@ -22,13 +22,13 @@ Eversports GraphQL-API
 EversportsClient  →  JSON (gecacht, 1h TTL)
         │
         ▼
-ActivityParser   →   ClassGroup-Objekte   →   WordPress-Shortcode → HTML
+ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block → HTML
 ```
 
 - `EversportsClient` holt alle Termine der nächsten 52 Wochen (paginiert, max. 50 pro
   Request) und legt das Ergebnis als WordPress-Transient für 1 Stunde zwischen.
 - `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
-- Der WordPress-Shortcode `[eversports-events]` rendert die Gruppen als HTML.
+- Der Gutenberg-Block „Eversports Events" (`kmc/eversports-events`) rendert die Gruppen als HTML.
 
 ---
 
@@ -88,7 +88,7 @@ Geheimnis und gehört **niemals ins Repository**.
 | `composer cs:fix` | korrigiert Formatierungs-Verstöße automatisch |
 | `composer mess` | prüft auf Code Smells (PHPMD: Komplexität, Benennung, ungenutzte Variablen) |
 | `composer release` | führt interaktiv durch einen Release (siehe [Release erstellen](#release-erstellen)) |
-| `npm start` | startet WordPress lokal (Port 8881) |
+| `npm start` | startet WordPress lokal (Port 8888) |
 | `npm run debug` | startet WordPress lokal mit aktiviertem Xdebug (Port 9003) |
 
 ### WordPress lokal starten
@@ -97,12 +97,27 @@ Geheimnis und gehört **niemals ins Repository**.
 npm start
 ```
 
-VS Code zeigt eine Benachrichtigung „Port 8881 is available" — darüber den Browser öffnen.
-WordPress-Admin ist unter `/wp-admin` erreichbar (Benutzername: `admin`, Passwort: `password`).
+WordPress läuft dann unter `http://localhost:8888`, der Admin-Bereich unter `/wp-admin`
+(Benutzername: `admin`, Passwort: `password`).
 
 Ablauf beim ersten Start:
 1. Plugin „KMC Eversports" unter *Plugins* aktivieren.
-2. Eine neue Seite anlegen, `[eversports-events]` in den Inhalt schreiben, Seite aufrufen.
+2. Unter *Einstellungen → KMC Eversports* den API-Token eintragen.
+3. Eine neue Seite anlegen, den Block „Eversports Events" einfügen, Seite aufrufen.
+
+#### Enfold-Theme (optional, wie auf der Live-Seite)
+
+Die KMC-Website nutzt das kostenpflichtige Theme **Enfold**. Es darf nicht ins Repository,
+lässt sich aber lokal einbinden, um den Block mit dem echten Styling zu sehen:
+
+1. ZIP aus dem Envato-Account herunterladen und das darin enthaltene `enfold.zip` nach
+   `.local/themes/` entpacken, sodass `.local/themes/enfold/style.css` existiert.
+   (`.local/` ist in `.gitignore`.)
+2. Datei `.wp-env.override.json` (ebenfalls ignoriert) mit diesem Inhalt anlegen:
+   ```json
+   { "themes": [ "./.local/themes/enfold" ] }
+   ```
+3. `npm start`, dann unter *Design → Themes* Enfold aktivieren.
 
 Beim nächsten `npm start` bleibt der Zustand erhalten (Plugin-Aktivierung, Seiteninhalte).
 

@@ -18,7 +18,7 @@ composer stan       # PHPStan static analysis (max level)
 composer cs         # check PSR-12 coding standard
 composer cs:fix     # auto-fix formatting
 
-npm start           # start local WordPress via wp-env (port 8881)
+npm start           # start local WordPress via wp-env (port 8888)
 npm run debug       # start with Xdebug (port 9003)
 npm run clean       # destroy Docker volumes (resets local WordPress)
 ```
@@ -32,7 +32,7 @@ Eversports GraphQL API
 EversportsClient  →  WP Transient cache (1h TTL)
         │
         ▼
-ActivityParser  →  ClassGroup[]  →  [eversports-events] shortcode  →  HTML
+ActivityParser  →  ClassGroup[]  →  kmc/eversports-events block  →  HTML
 ```
 
 **Entry point:** `kmc-eversports.php`
@@ -60,7 +60,7 @@ Verification is limited to the automated checks: `composer test`, `composer stan
 
 ## Dev Container
 
-PHP 8.2. Container name changes on rebuild — find it with:
+PHP 8.3. Container name changes on rebuild — find it with:
 ```bash
 docker ps --format "{{.Names}} {{.Image}}" | grep php
 ```
