@@ -30,7 +30,7 @@ ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block / Shortcode �
 - `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
 - Der Gutenberg-Block „Eversports Events" (`kmc/eversports-events`) rendert die Gruppen als HTML.
 - Für Seiten ohne Block-Editor (z. B. mit dem Avia Layout Builder von Enfold) gibt es dieselbe
-  Ausgabe als Shortcode `[kmc-eversports-events]` (siehe [Shortcode](#shortcode)).
+  Ausgabe als Shortcode `[eversports-events]` (siehe [Shortcode](#shortcode)).
 
 ---
 
@@ -114,7 +114,7 @@ Wo kein Block-Editor zur Verfügung steht — etwa auf Seiten, die mit dem **Avi
 Avia-„Text Block"-Element:
 
 ```
-[kmc-eversports-events group-ids="46917fab-f6ce-45ce-8235-97a5b65a5368,7d908db9-fbf8-4754-9c13-9da915e705fa" show-image="true"]
+[eversports-events group-ids="46917fab-f6ce-45ce-8235-97a5b65a5368,7d908db9-fbf8-4754-9c13-9da915e705fa" show-image="true"]
 ```
 
 | Attribut | Bedeutung |
@@ -123,6 +123,29 @@ Avia-„Text Block"-Element:
 | `show-image` | Optional, Standard `true`. Jeder andere Wert blendet die Bilder aus. |
 
 Der Shortcode rendert genau dasselbe wie der Block mit denselben Einstellungen.
+
+> **Umstieg vom alten Plugin:** Name und Attribute sind gleich, die **IDs aber nicht** — das alte
+> Plugin nutzte Zahlen-IDs aus dem Scraper, das neue nutzt die UUIDs der Eversports-API.
+
+#### Avia-Layout-Builder-Element (Enfold)
+
+Ist Enfold aktiv, bringt das Plugin ein eigenes Element mit: **„Eversports Events"** im
+Avia Layout Builder unter *Content Elements*. Damit braucht man keine IDs:
+
+1. Element auf die Seite ziehen bzw. anklicken, dann auf dem Element auf *Bearbeiten*.
+2. Unter **Kurse** einen oder mehrere Kurse nach Namen auswählen (Strg/Cmd gedrückt halten für
+   Mehrfachauswahl). Rechts zeigt die Vorschau sofort das Ergebnis.
+3. **Bilder anzeigen** auf *Ja* oder *Nein* stellen, *Save*, Seite speichern.
+
+Das Element speichert intern einen eigenen Shortcode (`[av_eversports_events course_groups='…'
+show_images='yes|no']`) und rendert genau wie Block und Shortcode. Lässt sich die Kursliste nicht
+laden (z. B. kein API-Token), steht im Auswahlfeld ein Hinweis statt der Kurse.
+
+Technisch: `AviaEventsIntegration` meldet den Ordner `enfold/` über den Enfold-Filter
+`avia_load_shortcodes` an; Enfold lädt daraus `KmcEversportsEventsAviaElement`. Ohne Enfold
+passiert nichts. Für PHPStan und Tests stehen Platzhalter der Enfold-Klassen in `stubs/enfold.php`.
+Die Enfold-Schnittstelle ist nicht offiziell dokumentiert — **nach Enfold-Updates das Element kurz
+im Editor prüfen** (zuletzt getestet mit Enfold 8.3.2).
 
 #### Enfold-Theme (optional, wie auf der Live-Seite)
 
@@ -214,7 +237,11 @@ src/                         Der Code des Projekts
   ActivityNode.php             Zwischen-Typ: eine flache Zeile aus der API-Antwort
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
-  EventsShortcode.php          Shortcode [kmc-eversports-events] → gleiche Ausgabe wie der Block
+  EventsShortcode.php          Shortcode [eversports-events] → gleiche Ausgabe wie der Block
+  AviaEventsIntegration.php    Enfold-unabhängige Logik fürs Avia-Element (Registrierung, Kursliste, Attribute)
+enfold/                      Wird nur von Enfold geladen (Filter avia_load_shortcodes)
+  KmcEversportsEventsAviaElement.php  Avia-Layout-Builder-Element „Eversports Events"
+stubs/enfold.php             Platzhalter der Enfold-Klassen für PHPStan und Tests (Enfold ist nicht in CI)
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten

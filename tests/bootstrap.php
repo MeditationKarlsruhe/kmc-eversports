@@ -71,3 +71,6 @@ function wp_kses_post(string $html): string
 {
     return $html;
 }
+
+require_once dirname(__DIR__) . '/stubs/enfold.php';
+require_once dirname(__DIR__) . '/enfold/KmcEversportsEventsAviaElement.php';

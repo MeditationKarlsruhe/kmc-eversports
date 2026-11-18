@@ -1,0 +1,56 @@
+{
+    "config": {
+        "version": "1.0",
+        "self_closing": "yes",
+        "name": "Eversports Events",
+        "tab": "Content Elements",
+        "icon": "https://example.test/enfold/icons/sc-upcoming-events.svg",
+        "order": 5,
+        "target": "avia-target-insert",
+        "shortcode": "av_eversports_events",
+        "tooltip": "Zeigt den Kursplan ausgewählter Eversports-Kurse an",
+        "preview": "large"
+    },
+    "elements": [
+        {
+            "type": "tab_container",
+            "nodescription": true
+        },
+        {
+            "type": "tab",
+            "name": "Content",
+            "nodescription": true
+        },
+        {
+            "name": "Kurse",
+            "desc": "Einen oder mehrere Kurse auswählen (Strg/Cmd gedrückt halten für Mehrfachauswahl).",
+            "id": "course_groups",
+            "type": "select",
+            "multiple": 10,
+            "std": "",
+            "subtype": {
+                "Group One": "grp-1",
+                "Group Two": "grp-2"
+            }
+        },
+        {
+            "name": "Bilder anzeigen",
+            "desc": "Kursbild über der Beschreibung anzeigen.",
+            "id": "show_images",
+            "type": "select",
+            "std": "yes",
+            "subtype": {
+                "Ja": "yes",
+                "Nein": "no"
+            }
+        },
+        {
+            "type": "tab_close",
+            "nodescription": true
+        },
+        {
+            "type": "tab_container_close",
+            "nodescription": true
+        }
+    ]
+}

@@ -53,7 +53,7 @@ jobs:
       - name: Assemble plugin directory
         run: |
           mkdir -p dist/kmc-eversports
-          cp -r src vendor build templates assets kmc-eversports.php block.json dist/kmc-eversports/
+          cp -r src enfold vendor build templates assets kmc-eversports.php block.json dist/kmc-eversports/
 
       - name: Build ZIP
         working-directory: dist

@@ -8,7 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Shortcode `[kmc-eversports-events group-ids="…" show-image="…"]` for pages without the block editor (e.g. built with Enfold's Avia Layout Builder); renders the same output as the `kmc/eversports-events` block via `Renderer::render`. `group-ids` takes the Eversports API's group UUIDs
+- Shortcode `[eversports-events group-ids="…" show-image="…"]` for pages without the block editor (e.g. built with Enfold's Avia Layout Builder); renders the same output as the `kmc/eversports-events` block via `Renderer::render`. Same name and attributes as the old plugin's shortcode, but `group-ids` now takes the Eversports API's UUIDs instead of the old scraper's numeric IDs
+- Avia Layout Builder element "Eversports Events" (Enfold, tab *Content Elements*): course groups picked by name in a multi-select (fed by `EversportsClient::fetchGroups()`), "Bilder anzeigen" yes/no, live preview in the edit modal with the plugin stylesheet. Registered via Enfold's `avia_load_shortcodes` filter; does nothing when Enfold is not active. Stores `[av_eversports_events course_groups='…' show_images='yes|no']` and renders through `Renderer::render` like block and shortcode
+- `enfold/` is now part of the release ZIP
 
 ## [2.1.0] - 2026-07-17
 
