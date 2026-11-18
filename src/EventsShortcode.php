@@ -37,25 +37,12 @@ final class EventsShortcode
     {
         return [
             'showImages' => self::parseShowImage($atts['show-image'] ?? 'true'),
-            'groupIds' => self::parseGroupIds($atts['group-ids'] ?? ''),
+            'groupIds' => GroupIdList::fromCommaSeparated($atts['group-ids'] ?? ''),
         ];
     }
 
     private static function parseShowImage(string $value): bool
     {
         return strtolower(trim($value)) === 'true';
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function parseGroupIds(string $value): array
-    {
-        $trimmed = array_map('trim', explode(',', $value));
-
-        return array_values(array_filter(
-            $trimmed,
-            static fn (string $groupId): bool => $groupId !== '',
-        ));
     }
 }

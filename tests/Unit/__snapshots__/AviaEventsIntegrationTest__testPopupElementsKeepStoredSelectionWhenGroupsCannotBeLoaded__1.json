@@ -1,0 +1,41 @@
+[
+    {
+        "type": "tab_container",
+        "nodescription": true
+    },
+    {
+        "type": "tab",
+        "name": "Content",
+        "nodescription": true
+    },
+    {
+        "name": "Kurse konnten nicht geladen werden",
+        "desc": "Bitte den API-Token unter Einstellungen → KMC Eversports prüfen. Die bisher gespeicherte Kursauswahl bleibt beim Speichern erhalten.",
+        "type": "heading",
+        "description_class": "av-builder-note av-error"
+    },
+    {
+        "id": "course_groups",
+        "type": "hidden",
+        "std": ""
+    },
+    {
+        "name": "Bilder anzeigen",
+        "desc": "Kursbild über der Beschreibung anzeigen.",
+        "id": "show_images",
+        "type": "select",
+        "std": "yes",
+        "subtype": {
+            "Ja": "yes",
+            "Nein": "no"
+        }
+    },
+    {
+        "type": "tab_close",
+        "nodescription": true
+    },
+    {
+        "type": "tab_container_close",
+        "nodescription": true
+    }
+]

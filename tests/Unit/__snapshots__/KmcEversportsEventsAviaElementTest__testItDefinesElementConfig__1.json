@@ -1,0 +1,12 @@
+{
+    "version": "1.0",
+    "self_closing": "yes",
+    "name": "Eversports Events",
+    "tab": "Content Elements",
+    "icon": "https://example.test/enfold/icons/sc-upcoming-events.svg",
+    "order": 5,
+    "target": "avia-target-insert",
+    "shortcode": "av_eversports_events",
+    "tooltip": "Zeigt den Kursplan ausgewählter Eversports-Kurse an",
+    "preview": "large"
+}

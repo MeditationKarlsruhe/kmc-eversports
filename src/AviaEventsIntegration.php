@@ -8,8 +8,15 @@ final class AviaEventsIntegration
 {
     public const SHORTCODE = 'av_eversports_events';
 
-    public const GROUPS_UNAVAILABLE_LABEL =
-        'Kurse konnten nicht geladen werden – API-Token unter Einstellungen → KMC Eversports prüfen';
+    public const POPUP_AJAX_ACTION = 'avia_ajax_' . self::SHORTCODE;
+
+    public const GROUPS_UNAVAILABLE_TITLE = 'Kurse konnten nicht geladen werden';
+
+    public const GROUPS_UNAVAILABLE_DESCRIPTION =
+        'Bitte den API-Token unter Einstellungen → KMC Eversports prüfen. '
+        . 'Die bisher gespeicherte Kursauswahl bleibt beim Speichern erhalten.';
+
+    public const UNKNOWN_GROUP_LABEL = 'Nicht mehr aktiver Kurs';
 
     public static function register(): void
     {
@@ -41,63 +48,162 @@ final class AviaEventsIntegration
     }
 
     /**
-     * @return array<string, string>
+     * Enfold builds the popup definition on every request; the Eversports API is only
+     * queried when the builder actually requests this element's edit window via AJAX.
+     *
+     * @param array<mixed> $request
+     * @return list<array<string, mixed>>
      */
-    public static function groupOptions(): array
+    public static function popupElements(array $request): array
     {
+        if (($request['action'] ?? null) !== self::POPUP_AJAX_ACTION) {
+            return self::form([]);
+        }
+
+        $storedGroupIds = self::storedGroupIds(self::storedShortcode($request));
+
         try {
             $groups = GroupsParser::parse(EversportsClient::fetchGroups());
         } catch (\Throwable $e) {
             error_log('KMC Eversports: ' . $e->getMessage());
-            return [self::GROUPS_UNAVAILABLE_LABEL => ''];
+            return self::unavailableForm();
         }
 
-        return self::toOptions($groups);
+        $options = self::toOptions($groups, $storedGroupIds);
+
+        return self::form($options);
+    }
+
+    /**
+     * @param array<string, string> $groupOptions
+     * @return list<array<string, mixed>>
+     */
+    public static function form(array $groupOptions): array
+    {
+        return self::wrapInTab([
+            [
+                'name' => 'Kurse',
+                'desc' => 'Einen oder mehrere Kurse auswählen (Strg/Cmd gedrückt halten für Mehrfachauswahl).',
+                'id' => 'course_groups',
+                'type' => 'select',
+                'multiple' => 10,
+                'std' => '',
+                'subtype' => $groupOptions,
+            ],
+            self::showImagesField(),
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function unavailableForm(): array
+    {
+        return self::wrapInTab([
+            [
+                'name' => self::GROUPS_UNAVAILABLE_TITLE,
+                'desc' => self::GROUPS_UNAVAILABLE_DESCRIPTION,
+                'type' => 'heading',
+                'description_class' => 'av-builder-note av-error',
+            ],
+            ['id' => 'course_groups', 'type' => 'hidden', 'std' => ''],
+            self::showImagesField(),
+        ]);
     }
 
     /**
      * @param list<GroupSummary> $groups
+     * @param list<string> $storedGroupIds
      * @return array<string, string>
      */
-    public static function toOptions(array $groups): array
+    public static function toOptions(array $groups, array $storedGroupIds): array
     {
         $options = [];
         foreach ($groups as $group) {
-            $name = trim($group->name);
-            $label = array_key_exists($name, $options)
-                ? $name . ' (' . substr($group->id, 0, 8) . ')'
-                : $name;
+            $name = esc_html(trim($group->name));
+            $label = array_key_exists($name, $options) ? self::withIdSuffix($name, $group->id) : $name;
             $options[$label] = $group->id;
+        }
+
+        foreach (array_diff($storedGroupIds, $options) as $unknownGroupId) {
+            $options[self::withIdSuffix(self::UNKNOWN_GROUP_LABEL, $unknownGroupId)] = $unknownGroupId;
         }
 
         return $options;
     }
 
     /**
-     * @param array<int|string, mixed> $atts
+     * @return list<string>
+     */
+    public static function storedGroupIds(string $shortcode): array
+    {
+        if (preg_match('/\bcourse_groups=[\'"]([^\'"]*)[\'"]/', $shortcode, $match) !== 1) {
+            return [];
+        }
+
+        return GroupIdList::fromCommaSeparated($match[1]);
+    }
+
+    /**
+     * @param array<string, string> $atts
      * @return array{showImages: bool, groupIds: list<string>}
      */
     public static function toBlockAttributes(array $atts): array
     {
-        $courseGroups = is_string($atts['course_groups'] ?? null) ? $atts['course_groups'] : '';
-        $showImages = is_string($atts['show_images'] ?? null) ? $atts['show_images'] : 'yes';
-
         return [
-            'showImages' => $showImages !== 'no',
-            'groupIds' => self::parseGroupIds($courseGroups),
+            'showImages' => self::parseShowImages($atts['show_images'] ?? 'yes'),
+            'groupIds' => GroupIdList::fromCommaSeparated($atts['course_groups'] ?? ''),
+        ];
+    }
+
+    private static function parseShowImages(string $value): bool
+    {
+        return $value !== 'no';
+    }
+
+    /**
+     * @param array<mixed> $request
+     */
+    private static function storedShortcode(array $request): string
+    {
+        $params = $request['params'] ?? null;
+        $shortcode = is_array($params) ? ($params['shortcode'] ?? '') : '';
+
+        return is_string($shortcode) ? stripslashes($shortcode) : '';
+    }
+
+    private static function withIdSuffix(string $label, string $groupId): string
+    {
+        return $label . ' (' . substr($groupId, 0, 8) . ')';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function showImagesField(): array
+    {
+        return [
+            'name' => 'Bilder anzeigen',
+            'desc' => 'Kursbild über der Beschreibung anzeigen.',
+            'id' => 'show_images',
+            'type' => 'select',
+            'std' => 'yes',
+            'subtype' => ['Ja' => 'yes', 'Nein' => 'no'],
         ];
     }
 
     /**
-     * @return list<string>
+     * @param list<array<string, mixed>> $fields
+     * @return list<array<string, mixed>>
      */
-    private static function parseGroupIds(string $value): array
+    private static function wrapInTab(array $fields): array
     {
-        $trimmed = array_map('trim', explode(',', $value));
-
-        return array_values(array_filter(
-            $trimmed,
-            static fn (string $groupId): bool => $groupId !== '',
-        ));
+        return [
+            ['type' => 'tab_container', 'nodescription' => true],
+            ['type' => 'tab', 'name' => __('Content', 'avia_framework'), 'nodescription' => true],
+            ...$fields,
+            ['type' => 'tab_close', 'nodescription' => true],
+            ['type' => 'tab_container_close', 'nodescription' => true],
+        ];
     }
 }

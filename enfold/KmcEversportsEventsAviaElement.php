@@ -30,55 +30,18 @@ final class KmcEversportsEventsAviaElement extends \aviaShortcodeTemplate
 
     protected function popup_elements(): void
     {
-        $groupOptions = is_admin() ? AviaEventsIntegration::groupOptions() : [];
-
-        $this->elements = [
-            ['type' => 'tab_container', 'nodescription' => true],
-            ['type' => 'tab', 'name' => __('Content', 'avia_framework'), 'nodescription' => true],
-            [
-                'name' => 'Kurse',
-                'desc' => 'Einen oder mehrere Kurse auswählen (Strg/Cmd gedrückt halten für Mehrfachauswahl).',
-                'id' => 'course_groups',
-                'type' => 'select',
-                'multiple' => 10,
-                'std' => '',
-                'subtype' => $groupOptions,
-            ],
-            [
-                'name' => 'Bilder anzeigen',
-                'desc' => 'Kursbild über der Beschreibung anzeigen.',
-                'id' => 'show_images',
-                'type' => 'select',
-                'std' => 'yes',
-                'subtype' => ['Ja' => 'yes', 'Nein' => 'no'],
-            ],
-            ['type' => 'tab_close', 'nodescription' => true],
-            ['type' => 'tab_container_close', 'nodescription' => true],
-        ];
+        $this->elements = AviaEventsIntegration::popupElements($_POST);
     }
 
     /**
-     * @param mixed $params
-     * @return array<string, mixed>
-     */
-    public function editor_element($params): array
-    {
-        $editorElement = parent::editor_element($params);
-        $editorElement['content'] = null;
-
-        return $editorElement;
-    }
-
-    /**
-     * @param mixed $atts
+     * @param array<string, string> $atts
      * @param mixed $content
      * @param mixed $shortcodename
      * @param mixed $meta
      */
     public function shortcode_handler($atts, $content = '', $shortcodename = '', $meta = ''): string
     {
-        $shortcodeAttributes = is_array($atts) ? $atts : [];
-        $blockAttributes = AviaEventsIntegration::toBlockAttributes($shortcodeAttributes);
+        $blockAttributes = AviaEventsIntegration::toBlockAttributes($atts);
 
         return Renderer::render($blockAttributes);
     }

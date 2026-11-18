@@ -119,7 +119,7 @@ Avia-„Text Block"-Element:
 
 | Attribut | Bedeutung |
 |---|---|
-| `group-ids` | Pflicht. Kommagetrennte Eversports-Gruppen-IDs (UUIDs), Leerzeichen sind egal. Die IDs liefert `GET /wp-json/kmc-eversports/v1/groups`. Ohne IDs rendert der Shortcode nichts. |
+| `group-ids` | Pflicht. Kommagetrennte Eversports-Gruppen-IDs (UUIDs), Leerzeichen sind egal. Die IDs liefert `GET /wp-json/kmc-eversports/v1/groups`. Ohne IDs rendert der Shortcode nichts (mit `WP_DEBUG` einen HTML-Kommentar mit dem Grund). |
 | `show-image` | Optional, Standard `true`. Jeder andere Wert blendet die Bilder aus. |
 
 Der Shortcode rendert genau dasselbe wie der Block mit denselben Einstellungen.
@@ -138,8 +138,16 @@ Avia Layout Builder unter *Content Elements*. Damit braucht man keine IDs:
 3. **Bilder anzeigen** auf *Ja* oder *Nein* stellen, *Save*, Seite speichern.
 
 Das Element speichert intern einen eigenen Shortcode (`[av_eversports_events course_groups='…'
-show_images='yes|no']`) und rendert genau wie Block und Shortcode. Lässt sich die Kursliste nicht
-laden (z. B. kein API-Token), steht im Auswahlfeld ein Hinweis statt der Kurse.
+show_images='yes|no']`) und rendert genau wie Block und Shortcode.
+
+- **Kursliste nicht ladbar** (z. B. kein/ungültiger API-Token): Statt der Auswahl erscheint ein
+  roter Hinweis. Die bisher gespeicherte Kursauswahl bleibt beim Speichern erhalten; nur
+  „Bilder anzeigen" lässt sich dann ändern.
+- **Gespeicherter Kurs nicht mehr aktiv** (in Eversports archiviert): Er bleibt als
+  „Nicht mehr aktiver Kurs (…)" ausgewählt, damit er beim Speichern nicht verloren geht —
+  abwählen, wenn er weg soll. Angezeigt wird er ohnehin nicht mehr.
+- Die Kursliste wird nur abgefragt, wenn das Bearbeitungsfenster des Elements geöffnet wird
+  (1 Stunde gecacht), nicht bei jedem Seitenaufruf im Admin.
 
 Technisch: `AviaEventsIntegration` meldet den Ordner `enfold/` über den Enfold-Filter
 `avia_load_shortcodes` an; Enfold lädt daraus `KmcEversportsEventsAviaElement`. Ohne Enfold
@@ -238,7 +246,8 @@ src/                         Der Code des Projekts
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
   EventsShortcode.php          Shortcode [eversports-events] → gleiche Ausgabe wie der Block
-  AviaEventsIntegration.php    Enfold-unabhängige Logik fürs Avia-Element (Registrierung, Kursliste, Attribute)
+  AviaEventsIntegration.php    Enfold-unabhängige Logik fürs Avia-Element (Registrierung, Formular, Kursliste, Attribute)
+  GroupIdList.php              Kommagetrennte Gruppen-IDs → Liste (Shortcode + Avia-Element)
 enfold/                      Wird nur von Enfold geladen (Filter avia_load_shortcodes)
   KmcEversportsEventsAviaElement.php  Avia-Layout-Builder-Element „Eversports Events"
 stubs/enfold.php             Platzhalter der Enfold-Klassen für PHPStan und Tests (Enfold ist nicht in CI)

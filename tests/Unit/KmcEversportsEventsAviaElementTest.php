@@ -6,6 +6,7 @@ namespace Kmc\Eversports\Tests\Unit;
 
 use Brain\Monkey;
 use Brain\Monkey\Functions;
+use Kmc\Eversports\AviaEventsIntegration;
 use Kmc\Eversports\EversportsClient;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -19,37 +20,36 @@ final class KmcEversportsEventsAviaElementTest extends TestCase
         parent::setUp();
         Monkey\setUp();
         Functions\when('__')->returnArg();
+        $_POST = [];
     }
 
     protected function tearDown(): void
     {
+        $_POST = [];
         Monkey\tearDown();
         parent::tearDown();
     }
 
-    public function testItDefinesElementConfigAndPopupInAdmin(): void
+    public function testItDefinesElementConfig(): void
     {
-        Functions\when('is_admin')->justReturn(true);
-        Functions\when('get_transient')->justReturn($this->groupsJson());
-
         $element = $this->createElement();
 
-        $this->assertMatchesJsonSnapshot(['config' => $element->config, 'elements' => $element->elements]);
+        $this->assertMatchesJsonSnapshot($element->config);
     }
 
-    public function testItSkipsLoadingGroupsOutsideAdmin(): void
+    public function testItTakesPopupElementsFromTheCurrentRequest(): void
     {
-        Functions\when('is_admin')->justReturn(false);
-        Functions\expect('get_transient')->never();
+        Functions\when('get_transient')->justReturn($this->groupsJson());
+        $_POST = ['action' => AviaEventsIntegration::POPUP_AJAX_ACTION];
+        $expected = AviaEventsIntegration::popupElements($_POST);
 
         $element = $this->createElement();
 
-        self::assertSame([], $element->elements[2]['subtype']);
+        self::assertSame($expected, $element->elements);
     }
 
     public function testShortcodeHandlerRendersSelectedGroups(): void
     {
-        Functions\when('is_admin')->justReturn(false);
         $element = $this->createElement();
         Functions\when('get_transient')->alias(
             fn (string $key): string|false => $key === EversportsClient::ACTIVITIES_TRANSIENT_KEY
@@ -65,22 +65,11 @@ final class KmcEversportsEventsAviaElementTest extends TestCase
 
     public function testShortcodeHandlerRendersNothingWithoutAttributes(): void
     {
-        Functions\when('is_admin')->justReturn(false);
         $element = $this->createElement();
 
-        $result = $element->shortcode_handler('');
+        $result = $element->shortcode_handler([]);
 
         self::assertSame('', $result);
-    }
-
-    public function testEditorElementMarksElementAsSelfClosing(): void
-    {
-        Functions\when('is_admin')->justReturn(false);
-        $element = $this->createElement();
-
-        $result = $element->editor_element(['innerHtml' => '<div>Eversports Events</div>', 'content' => 'x']);
-
-        self::assertSame(['innerHtml' => '<div>Eversports Events</div>', 'content' => null], $result);
     }
 
     private function createElement(): \KmcEversportsEventsAviaElement

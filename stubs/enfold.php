@@ -3,10 +3,16 @@
 /**
  * Minimal stand-ins for the Enfold (Avia Layout Builder) classes the plugin extends.
  *
- * Enfold is a commercial theme and is not available in CI. These stubs mirror the
+ * Enfold is a commercial theme and is not available in CI. These stubs mirror only the
  * parts of Enfold 8.3.2's API that KmcEversportsEventsAviaElement relies on
- * (config-templatebuilder/avia-template-builder/php/class-shortcode-template.php):
- * the constructor calls shortcode_insert_button() and then popup_elements().
+ * (config-templatebuilder/avia-template-builder/php/class-shortcode-template.php).
+ *
+ * Simplified on purpose: the real constructor calls shortcode_insert_button(), then
+ * extra_config() (which calls popup_elements() and expands popup templates), and then
+ * appends hidden av_uid/sc_version fields. The stub only calls the two plugin hooks, so
+ * tests see exactly the plugin's own config and popup definition.
+ *
+ * The real shortcode_handler_prepare() always passes an array as $atts.
  *
  * Used by PHPStan (scanFiles) and by the PHPUnit bootstrap. Never loaded in WordPress.
  */
@@ -38,7 +44,7 @@ abstract class aviaShortcodeTemplate
     abstract protected function shortcode_insert_button();
 
     /**
-     * @param mixed $atts
+     * @param array<string, string> $atts
      * @param mixed $content
      * @param mixed $shortcodename
      * @param mixed $meta
@@ -49,14 +55,5 @@ abstract class aviaShortcodeTemplate
     /** @return void */
     protected function popup_elements()
     {
-    }
-
-    /**
-     * @param mixed $params
-     * @return array<string, mixed>
-     */
-    public function editor_element($params)
-    {
-        return is_array($params) ? $params : [];
     }
 }
