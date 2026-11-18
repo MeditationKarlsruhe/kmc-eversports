@@ -19,20 +19,39 @@ final class Utf8HtmlDriver extends HtmlDriver
         $domDocument->preserveWhiteSpace = false;
         $domDocument->formatOutput = true;
 
-        // The <?xml encoding="UTF-8"> prefix tells libxml2 to parse the HTML as
-        // UTF-8, preventing multibyte chars from being misread as Latin-1 entities.
-        @$domDocument->loadHTML('<?xml encoding="UTF-8">' . $data, LIBXML_HTML_NODEFDTD);
+        // libxml2 parses HTML as Latin-1 unless told otherwise. Encoding every
+        // non-ASCII character as a numeric entity up front makes the input pure
+        // ASCII, so the result no longer depends on how a given libxml2 version
+        // handles encoding hints.
+        $asciiOnly = mb_encode_numericentity($data, [0x80, 0x10FFFF, 0, 0x1FFFFF], 'UTF-8');
+        @$domDocument->loadHTML($asciiOnly, LIBXML_HTML_NODEFDTD);
 
-        $htmlValue = (string) preg_replace(
-            '/^<\?xml encoding="UTF-8">/',
-            '',
-            (string) $domDocument->saveHTML(),
-        );
+        $htmlValue = (string) $domDocument->saveHTML();
 
         if (PHP_OS_FAMILY === 'Windows') {
             $htmlValue = implode("\n", explode("\r\n", $htmlValue));
         }
 
-        return $htmlValue;
+        return self::decodeNonAsciiEntities($htmlValue);
+    }
+
+    /**
+     * libxml2 < 2.14 serializes non-ASCII characters as named entities (&ndash;),
+     * newer versions emit them as raw UTF-8 (–). Normalize to raw UTF-8 so the
+     * snapshot does not depend on the libxml2 version of the machine running the
+     * tests. Entities for ASCII characters (&amp;, &lt;, …) are kept, as they carry
+     * meaning in HTML.
+     */
+    private static function decodeNonAsciiEntities(string $html): string
+    {
+        return (string) preg_replace_callback(
+            '/&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);/',
+            static function (array $match): string {
+                $decoded = html_entity_decode($match[0], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+                return ord($decoded[0]) >= 0x80 ? $decoded : $match[0];
+            },
+            $html,
+        );
     }
 }
