@@ -19,15 +19,14 @@ final class Utf8HtmlDriver extends HtmlDriver
         $domDocument->preserveWhiteSpace = false;
         $domDocument->formatOutput = true;
 
-        // The <?xml encoding="UTF-8"> prefix tells libxml2 to parse the HTML as
-        // UTF-8, preventing multibyte chars from being misread as Latin-1 entities.
-        @$domDocument->loadHTML('<?xml encoding="UTF-8">' . $data, LIBXML_HTML_NODEFDTD);
+        // libxml2 parses HTML as Latin-1 unless told otherwise. Encoding every
+        // non-ASCII character as a numeric entity up front makes the input pure
+        // ASCII, so the result no longer depends on how a given libxml2 version
+        // handles encoding hints.
+        $asciiOnly = mb_encode_numericentity($data, [0x80, 0x10FFFF, 0, 0x1FFFFF], 'UTF-8');
+        @$domDocument->loadHTML($asciiOnly, LIBXML_HTML_NODEFDTD);
 
-        $htmlValue = (string) preg_replace(
-            '/^<\?xml encoding="UTF-8">/',
-            '',
-            (string) $domDocument->saveHTML(),
-        );
+        $htmlValue = (string) $domDocument->saveHTML();
 
         if (PHP_OS_FAMILY === 'Windows') {
             $htmlValue = implode("\n", explode("\r\n", $htmlValue));
