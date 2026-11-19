@@ -3,7 +3,7 @@
 /**
  * Plugin Name: KMC Eversports
  * Description: Displays Eversports class schedules on the KMC WordPress site.
- * Version: 2.2.0
+ * Version: 2.2.1
  * Requires at least: 6.4
  * Requires PHP: 8.2
  * Author: Kadampa Meditationszentrum Karlsruhe

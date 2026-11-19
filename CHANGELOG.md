@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-11-19
+
 ### Fixed
 
 - Frontend styles were overridden by Enfold's color scheme (`.main_color a`, `.main_color div`), leaving the registration buttons without visible text and the appointment borders faint. All rules in `assets/css/kmc-eversports.css` are now scoped under `.kmc-eversports-events` and match the old plugin's look: 370px appointment tiles without growing, 178×50px buttons with 20px white text on `#334d5c` (inverted on hover), 150px between course groups, description links in `#f2c7ac`
