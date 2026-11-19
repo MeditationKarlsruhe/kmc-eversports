@@ -30,7 +30,7 @@ ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block / Shortcode �
 - `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
 - Der Gutenberg-Block „Eversports Events" (`kmc/eversports-events`) rendert die Gruppen als HTML.
 - Für Seiten ohne Block-Editor (z. B. mit dem Avia Layout Builder von Enfold) gibt es dieselbe
-  Ausgabe als Shortcode `[eversports-events]` (siehe [Shortcode](#shortcode)).
+  Ausgabe als Shortcode `[kmc-eversports-events]` (siehe [Shortcode](#shortcode)).
 
 ---
 
@@ -114,7 +114,7 @@ Wo kein Block-Editor zur Verfügung steht — etwa auf Seiten, die mit dem **Avi
 Avia-„Text Block"-Element:
 
 ```
-[eversports-events group-ids="46917fab-f6ce-45ce-8235-97a5b65a5368,7d908db9-fbf8-4754-9c13-9da915e705fa" show-image="true"]
+[kmc-eversports-events group-ids="46917fab-f6ce-45ce-8235-97a5b65a5368,7d908db9-fbf8-4754-9c13-9da915e705fa" show-image="true"]
 ```
 
 | Attribut | Bedeutung |
@@ -123,9 +123,6 @@ Avia-„Text Block"-Element:
 | `show-image` | Optional, Standard `true`. Jeder andere Wert blendet die Bilder aus. |
 
 Der Shortcode rendert genau dasselbe wie der Block mit denselben Einstellungen.
-
-> **Umstieg vom alten Plugin:** Name und Attribute sind gleich, die **IDs aber nicht** — das alte
-> Plugin nutzte Zahlen-IDs aus dem Scraper, das neue nutzt die UUIDs der Eversports-API.
 
 #### Avia-Layout-Builder-Element (Enfold)
 
@@ -254,7 +251,7 @@ src/                         Der Code des Projekts
   ActivityNode.php             Zwischen-Typ: eine flache Zeile aus der API-Antwort
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
-  EventsShortcode.php          Shortcode [eversports-events] → gleiche Ausgabe wie der Block
+  EventsShortcode.php          Shortcode [kmc-eversports-events] → gleiche Ausgabe wie der Block
   AviaEventsIntegration.php    Enfold-unabhängige Logik fürs Avia-Element (Registrierung, Formular, Kursliste, Attribute)
   GroupIdList.php              Kommagetrennte Gruppen-IDs → Liste (Shortcode + Avia-Element)
 enfold/                      Wird nur von Enfold geladen (Filter avia_load_shortcodes)
