@@ -6,13 +6,10 @@ namespace Kmc\Eversports;
 
 final class Renderer
 {
-    /**
-     * @param array<string, mixed> $attributes
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     */
+    /** @param array<string, mixed> $attributes */
     public static function render(array $attributes): string
     {
-        $showImage = $attributes['showImages'] ?? true;
+        $showImage = ($attributes['showImages'] ?? true) === true;
         $groupIds = $attributes['groupIds'] ?? [];
 
         try {
@@ -33,8 +30,6 @@ final class Renderer
             return '';
         }
 
-        ob_start();
-        include dirname(__DIR__) . '/templates/eversports-events.php';
-        return (string) ob_get_clean();
+        return EventsTemplate::render($groups, $showImage);
     }
 }

@@ -6,6 +6,7 @@ namespace Kmc\Eversports\Tests\Unit;
 
 use Kmc\Eversports\Appointment;
 use Kmc\Eversports\ClassGroup;
+use Kmc\Eversports\EventsTemplate;
 use Kmc\Eversports\Tests\Utf8HtmlDriver;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -50,7 +51,7 @@ final class TemplateTest extends TestCase
             ),
         ];
 
-        $html = $this->renderTemplate($groups, showImage: true);
+        $html = EventsTemplate::render($groups, showImage: true);
 
         $this->assertMatchesSnapshot($html, new Utf8HtmlDriver());
     }
@@ -67,7 +68,7 @@ final class TemplateTest extends TestCase
             ),
         ];
 
-        $html = $this->renderTemplate($groups, showImage: false);
+        $html = EventsTemplate::render($groups, showImage: false);
 
         self::assertStringNotContainsString('kmc-event-group__image', $html);
         self::assertStringNotContainsString('files.eversports.com', $html);
@@ -91,20 +92,9 @@ final class TemplateTest extends TestCase
             ),
         ];
 
-        $html = $this->renderTemplate($groups, showImage: false);
+        $html = EventsTemplate::render($groups, showImage: false);
 
         self::assertStringNotContainsString('kmc-appointment__register', $html);
         self::assertStringNotContainsString('Anmeldung', $html);
-    }
-
-    /**
-     * @param list<ClassGroup> $groups
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    private function renderTemplate(array $groups, bool $showImage): string
-    {
-        ob_start();
-        include __DIR__ . '/../../templates/eversports-events.php';
-        return (string) ob_get_clean();
     }
 }
