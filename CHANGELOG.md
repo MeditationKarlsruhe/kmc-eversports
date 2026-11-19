@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Shortcode `[kmc-eversports-events group-ids="…" show-image="…"]` for pages without the block editor (e.g. built with Enfold's Avia Layout Builder); renders the same output as the `kmc/eversports-events` block via `Renderer::render`. `group-ids` takes the Eversports API's group UUIDs
+
 ## [2.1.0] - 2026-07-17
 
 ### Added
