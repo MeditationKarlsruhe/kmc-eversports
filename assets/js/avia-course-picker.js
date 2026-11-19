@@ -52,12 +52,25 @@
         storeCourseNames(select);
     }
 
+    function keepScrollPosition(select, scrollTop) {
+        var restore = function () {
+            select.scrollTop(scrollTop);
+        };
+
+        select.on('scroll', restore);
+        window.setTimeout(function () {
+            select.off('scroll', restore);
+        }, 300);
+    }
+
     function toggleOption(event) {
         var select = $(this).closest('select');
+        var scrollTop = select.scrollTop();
 
         event.preventDefault();
         this.selected = !this.selected;
         select.trigger('change');
+        keepScrollPosition(select, scrollTop);
     }
 
     $(document).on('avia_modal_finished', function () {
