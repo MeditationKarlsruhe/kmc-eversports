@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - `EversportsClient::postGraphQL()` decodes each API response once and returns the decoded array; previously the body was decoded once for the GraphQL error check and again by the caller
+- Template variables are passed explicitly: `EventsTemplate::render(list<ClassGroup> $groups, bool $showImage)` includes `templates/eversports-events.php`, used by `Renderer` and the template tests instead of an ambient-scope `include`. `Renderer` only treats `showImages === true` as "show images"
 
 ## [2.1.0] - 2026-07-17
 
