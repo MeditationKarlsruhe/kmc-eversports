@@ -6,11 +6,22 @@
     <file>tests</file>
     <file>templates</file>
     <file>kmc-eversports.php</file>
+    <file>enfold</file>
 
     <arg name="colors"/>
     <arg value="sp"/>
 
     <rule ref="PSR12">
         <exclude-pattern>tests/bootstrap.php</exclude-pattern>
+    </rule>
+
+    <!-- Enfold's aviaShortcodeTemplate dictates snake_case method names (shortcode_handler etc.). -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName">
+        <exclude-pattern>enfold/*</exclude-pattern>
+    </rule>
+
+    <!-- Enfold uses the element class name as HTML id / jQuery selector; namespaces would break it. -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>enfold/*</exclude-pattern>
     </rule>
 </ruleset>

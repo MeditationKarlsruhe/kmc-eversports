@@ -8,6 +8,9 @@ parameters:
         - tests
         - templates
         - kmc-eversports.php
+        - enfold
+    scanFiles:
+        - stubs/enfold.php
     excludePaths:
         - tests/bootstrap.php
     ignoreErrors:

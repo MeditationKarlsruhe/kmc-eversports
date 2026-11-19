@@ -119,10 +119,47 @@ Avia-„Text Block"-Element:
 
 | Attribut | Bedeutung |
 |---|---|
-| `group-ids` | Pflicht. Kommagetrennte Eversports-Gruppen-IDs (UUIDs), Leerzeichen sind egal. Die IDs liefert `GET /wp-json/kmc-eversports/v1/groups`. Ohne IDs rendert der Shortcode nichts. |
+| `group-ids` | Pflicht. Kommagetrennte Eversports-Gruppen-IDs (UUIDs), Leerzeichen sind egal. Die IDs liefert `GET /wp-json/kmc-eversports/v1/groups`. Ohne IDs rendert der Shortcode nichts (mit `WP_DEBUG` einen HTML-Kommentar mit dem Grund). |
 | `show-image` | Optional, Standard `true`. Jeder andere Wert blendet die Bilder aus. |
 
 Der Shortcode rendert genau dasselbe wie der Block mit denselben Einstellungen.
+
+#### Avia-Layout-Builder-Element (Enfold)
+
+Ist Enfold aktiv, bringt das Plugin ein eigenes Element mit: **„Eversports Events"** im
+Avia Layout Builder unter *Content Elements*. Damit braucht man keine IDs:
+
+1. Element auf die Seite ziehen bzw. anklicken, dann auf dem Element auf *Bearbeiten*.
+2. Unter **Kurse** einen oder mehrere Kurse nach Namen auswählen. Ein Klick wählt einen Kurs an
+   oder ab (kein Strg/Cmd nötig). Das Feld *Kurse filtern …* darüber grenzt die Liste ein; bereits
+   gewählte Kurse bleiben gewählt, auch wenn sie gerade ausgeblendet sind. Rechts zeigt die
+   Vorschau sofort das Ergebnis.
+3. **Bilder anzeigen** auf *Ja* oder *Nein* stellen, *Save*, Seite speichern.
+
+Im Builder zeigt das Element unter seinem Namen die gewählten Kurse an, einen pro Zeile.
+
+Das Element speichert intern einen eigenen Shortcode (`[av_eversports_events course_groups='…'
+course_names='…' show_images='yes|no']`) und rendert genau wie Block und Shortcode.
+`course_names` dient nur der Anzeige im Builder: Das Script `assets/js/avia-course-picker.js`
+schreibt beim Öffnen und Ändern der Auswahl die Kursnamen hinein, so dass der Builder beim Laden
+der Seite nicht bei Eversports nachfragen muss. Wird ein Kurs in Eversports umbenannt, steht im
+Builder bis zum nächsten Öffnen des Elements noch der alte Name; die Frontend-Ausgabe ist davon
+nicht betroffen.
+
+- **Kursliste nicht ladbar** (z. B. kein/ungültiger API-Token): Statt der Auswahl erscheint ein
+  roter Hinweis. Die bisher gespeicherte Kursauswahl bleibt beim Speichern erhalten; nur
+  „Bilder anzeigen" lässt sich dann ändern.
+- **Gespeicherter Kurs nicht mehr aktiv** (in Eversports archiviert): Er bleibt als
+  „Nicht mehr aktiver Kurs (…)" ausgewählt, damit er beim Speichern nicht verloren geht —
+  abwählen, wenn er weg soll. Angezeigt wird er ohnehin nicht mehr.
+- Die Kursliste wird nur abgefragt, wenn das Bearbeitungsfenster des Elements geöffnet wird
+  (1 Stunde gecacht), nicht bei jedem Seitenaufruf im Admin.
+
+Technisch: `AviaEventsIntegration` meldet den Ordner `enfold/` über den Enfold-Filter
+`avia_load_shortcodes` an; Enfold lädt daraus `KmcEversportsEventsAviaElement`. Ohne Enfold
+passiert nichts. Für PHPStan und Tests stehen Platzhalter der Enfold-Klassen in `stubs/enfold.php`.
+Die Enfold-Schnittstelle ist nicht offiziell dokumentiert — **nach Enfold-Updates das Element kurz
+im Editor prüfen** (zuletzt getestet mit Enfold 8.3.2).
 
 #### Enfold-Theme (optional, wie auf der Live-Seite)
 
@@ -215,6 +252,11 @@ src/                         Der Code des Projekts
   Appointment.php              Ein einzelner Termin (Start, Ende, Anmeldelink)
   ClassGroup.php               Eine Kursgruppe mit Titel, Beschreibung, Bild und Terminen
   EventsShortcode.php          Shortcode [kmc-eversports-events] → gleiche Ausgabe wie der Block
+  AviaEventsIntegration.php    Enfold-unabhängige Logik fürs Avia-Element (Registrierung, Formular, Kursliste, Attribute)
+  GroupIdList.php              Kommagetrennte Gruppen-IDs → Liste (Shortcode + Avia-Element)
+enfold/                      Wird nur von Enfold geladen (Filter avia_load_shortcodes)
+  KmcEversportsEventsAviaElement.php  Avia-Layout-Builder-Element „Eversports Events"
+stubs/enfold.php             Platzhalter der Enfold-Klassen für PHPStan und Tests (Enfold ist nicht in CI)
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten

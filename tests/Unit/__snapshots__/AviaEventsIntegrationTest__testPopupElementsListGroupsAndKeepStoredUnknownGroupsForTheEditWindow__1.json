@@ -1,0 +1,48 @@
+[
+    {
+        "type": "tab_container",
+        "nodescription": true
+    },
+    {
+        "type": "tab",
+        "name": "Content",
+        "nodescription": true
+    },
+    {
+        "name": "Kurse",
+        "desc": "Ein Klick wählt einen Kurs an oder ab. Das Filterfeld grenzt die Liste ein, die Auswahl bleibt dabei erhalten.",
+        "id": "course_groups",
+        "type": "select",
+        "multiple": 10,
+        "std": "",
+        "subtype": {
+            "Arya Tara Puja": "a-uuid",
+            "Meditation am Abend": "b-uuid",
+            "Nicht mehr aktiver Kurs (archived)": "archived-uuid"
+        }
+    },
+    {
+        "id": "course_names",
+        "type": "hidden",
+        "std": ""
+    },
+    {
+        "name": "Bilder anzeigen",
+        "desc": "Kursbild über der Beschreibung anzeigen.",
+        "id": "show_images",
+        "type": "select",
+        "std": "yes",
+        "subtype": {
+            "Ja": "yes",
+            "Nein": "no"
+        }
+    },
+    {
+        "type": "tab_close",
+        "nodescription": true
+    },
+    {
+        "type": "tab_container_close",
+        "nodescription": true
+    }
+]
