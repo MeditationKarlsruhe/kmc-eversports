@@ -6,7 +6,7 @@ namespace Kmc\Eversports;
 
 final class EventsShortcode
 {
-    public const TAG = 'eversports-events';
+    public const TAG = 'kmc-eversports-events';
 
     public static function register(): void
     {

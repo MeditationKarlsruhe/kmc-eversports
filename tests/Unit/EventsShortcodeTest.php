@@ -39,7 +39,7 @@ final class EventsShortcodeTest extends TestCase
     {
         Functions\expect('add_shortcode')
             ->once()
-            ->with('eversports-events', [EventsShortcode::class, 'handle']);
+            ->with('kmc-eversports-events', [EventsShortcode::class, 'handle']);
 
         EventsShortcode::registerShortcode();
 
