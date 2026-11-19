@@ -18,6 +18,14 @@ final class AviaEventsIntegration
 
     public const UNKNOWN_GROUP_LABEL = 'Nicht mehr aktiver Kurs';
 
+    public const COURSE_NAMES_FIELD = 'course_names';
+
+    public const COURSE_PICKER_SCRIPT_HANDLE = 'kmc-eversports-avia-course-picker';
+
+    private const COURSE_PICKER_SCRIPT_PATH = 'assets/js/avia-course-picker.js';
+
+    private const EDITOR_SCREENS = ['post.php', 'post-new.php'];
+
     public static function register(): void
     {
         add_filter('avia_load_shortcodes', [self::class, 'addElementFolder'], 10);
@@ -45,6 +53,22 @@ final class AviaEventsIntegration
         $stylesheets[$pluginUrl . 'assets/css/kmc-eversports.css'] = 1;
 
         return $stylesheets;
+    }
+
+    public static function enqueueCoursePickerScript(string $hookSuffix): void
+    {
+        if (!in_array($hookSuffix, self::EDITOR_SCREENS, true)) {
+            return;
+        }
+
+        $pluginFile = dirname(__DIR__) . '/kmc-eversports.php';
+        wp_enqueue_script(
+            self::COURSE_PICKER_SCRIPT_HANDLE,
+            plugin_dir_url($pluginFile) . self::COURSE_PICKER_SCRIPT_PATH,
+            ['jquery'],
+            (string) filemtime(dirname(__DIR__) . '/' . self::COURSE_PICKER_SCRIPT_PATH),
+            true,
+        );
     }
 
     /**
@@ -83,13 +107,15 @@ final class AviaEventsIntegration
         return self::wrapInTab([
             [
                 'name' => 'Kurse',
-                'desc' => 'Einen oder mehrere Kurse auswählen (Strg/Cmd gedrückt halten für Mehrfachauswahl).',
+                'desc' => 'Ein Klick wählt einen Kurs an oder ab. Das Filterfeld grenzt die Liste ein, '
+                    . 'die Auswahl bleibt dabei erhalten.',
                 'id' => 'course_groups',
                 'type' => 'select',
                 'multiple' => 10,
                 'std' => '',
                 'subtype' => $groupOptions,
             ],
+            self::courseNamesField(),
             self::showImagesField(),
         ]);
     }
@@ -107,6 +133,7 @@ final class AviaEventsIntegration
                 'description_class' => 'av-builder-note av-error',
             ],
             ['id' => 'course_groups', 'type' => 'hidden', 'std' => ''],
+            self::courseNamesField(),
             self::showImagesField(),
         ]);
     }
@@ -175,6 +202,17 @@ final class AviaEventsIntegration
     private static function withIdSuffix(string $label, string $groupId): string
     {
         return $label . ' (' . substr($groupId, 0, 8) . ')';
+    }
+
+    /**
+     * Filled by assets/js/avia-course-picker.js with the selected course names, so the
+     * builder canvas can name the courses without querying Eversports on page load.
+     *
+     * @return array<string, mixed>
+     */
+    private static function courseNamesField(): array
+    {
+        return ['id' => self::COURSE_NAMES_FIELD, 'type' => 'hidden', 'std' => ''];
     }
 
     /**

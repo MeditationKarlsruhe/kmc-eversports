@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kmc\Eversports\Tests\Unit;
 
 use Brain\Monkey;
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Kmc\Eversports\AviaEventsIntegration;
 use Kmc\Eversports\EversportsClient;
@@ -46,6 +47,18 @@ final class KmcEversportsEventsAviaElementTest extends TestCase
         $element = $this->createElement();
 
         self::assertSame($expected, $element->elements);
+    }
+
+    public function testAdminAssetsRegisterCoursePickerScript(): void
+    {
+        $element = $this->createElement();
+        Actions\expectAdded('admin_enqueue_scripts')
+            ->once()
+            ->with([AviaEventsIntegration::class, 'enqueueCoursePickerScript']);
+
+        $element->init();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testShortcodeHandlerRendersSelectedGroups(): void

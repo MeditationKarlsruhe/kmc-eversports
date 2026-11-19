@@ -26,11 +26,17 @@ final class KmcEversportsEventsAviaElement extends \aviaShortcodeTemplate
         $this->config['shortcode'] = AviaEventsIntegration::SHORTCODE;
         $this->config['tooltip'] = 'Zeigt den Kursplan ausgewählter Eversports-Kurse an';
         $this->config['preview'] = 'large';
+        $this->config['alb_items'] = ['value' => AviaEventsIntegration::COURSE_NAMES_FIELD];
     }
 
     protected function popup_elements(): void
     {
         $this->elements = AviaEventsIntegration::popupElements($_POST);
+    }
+
+    protected function admin_assets(): void
+    {
+        add_action('admin_enqueue_scripts', [AviaEventsIntegration::class, 'enqueueCoursePickerScript']);
     }
 
     /**

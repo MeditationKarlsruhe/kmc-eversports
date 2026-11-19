@@ -56,4 +56,20 @@ abstract class aviaShortcodeTemplate
     protected function popup_elements()
     {
     }
+
+    /**
+     * The real init() also registers the shortcode and frontend assets; it calls
+     * admin_assets() only in the admin and on AJAX requests.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        $this->admin_assets();
+    }
+
+    /** @return void */
+    protected function admin_assets()
+    {
+    }
 }

@@ -8,5 +8,8 @@
     "target": "avia-target-insert",
     "shortcode": "av_eversports_events",
     "tooltip": "Zeigt den Kursplan ausgewählter Eversports-Kurse an",
-    "preview": "large"
+    "preview": "large",
+    "alb_items": {
+        "value": "course_names"
+    }
 }

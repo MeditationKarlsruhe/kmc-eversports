@@ -10,7 +10,7 @@
     },
     {
         "name": "Kurse",
-        "desc": "Einen oder mehrere Kurse auswählen (Strg/Cmd gedrückt halten für Mehrfachauswahl).",
+        "desc": "Ein Klick wählt einen Kurs an oder ab. Das Filterfeld grenzt die Liste ein, die Auswahl bleibt dabei erhalten.",
         "id": "course_groups",
         "type": "select",
         "multiple": 10,
@@ -20,6 +20,11 @@
             "Meditation am Abend": "b-uuid",
             "Nicht mehr aktiver Kurs (archived)": "archived-uuid"
         }
+    },
+    {
+        "id": "course_names",
+        "type": "hidden",
+        "std": ""
     },
     {
         "name": "Bilder anzeigen",

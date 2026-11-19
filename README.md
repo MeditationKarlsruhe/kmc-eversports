@@ -133,12 +133,21 @@ Ist Enfold aktiv, bringt das Plugin ein eigenes Element mit: **„Eversports Eve
 Avia Layout Builder unter *Content Elements*. Damit braucht man keine IDs:
 
 1. Element auf die Seite ziehen bzw. anklicken, dann auf dem Element auf *Bearbeiten*.
-2. Unter **Kurse** einen oder mehrere Kurse nach Namen auswählen (Strg/Cmd gedrückt halten für
-   Mehrfachauswahl). Rechts zeigt die Vorschau sofort das Ergebnis.
+2. Unter **Kurse** einen oder mehrere Kurse nach Namen auswählen. Ein Klick wählt einen Kurs an
+   oder ab (kein Strg/Cmd nötig). Das Feld *Kurse filtern …* darüber grenzt die Liste ein; bereits
+   gewählte Kurse bleiben gewählt, auch wenn sie gerade ausgeblendet sind. Rechts zeigt die
+   Vorschau sofort das Ergebnis.
 3. **Bilder anzeigen** auf *Ja* oder *Nein* stellen, *Save*, Seite speichern.
 
+Im Builder zeigt das Element unter seinem Namen die gewählten Kurse an.
+
 Das Element speichert intern einen eigenen Shortcode (`[av_eversports_events course_groups='…'
-show_images='yes|no']`) und rendert genau wie Block und Shortcode.
+course_names='…' show_images='yes|no']`) und rendert genau wie Block und Shortcode.
+`course_names` dient nur der Anzeige im Builder: Das Script `assets/js/avia-course-picker.js`
+schreibt beim Öffnen und Ändern der Auswahl die Kursnamen hinein, so dass der Builder beim Laden
+der Seite nicht bei Eversports nachfragen muss. Wird ein Kurs in Eversports umbenannt, steht im
+Builder bis zum nächsten Öffnen des Elements noch der alte Name; die Frontend-Ausgabe ist davon
+nicht betroffen.
 
 - **Kursliste nicht ladbar** (z. B. kein/ungültiger API-Token): Statt der Auswahl erscheint ein
   roter Hinweis. Die bisher gespeicherte Kursauswahl bleibt beim Speichern erhalten; nur

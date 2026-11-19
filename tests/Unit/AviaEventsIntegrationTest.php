@@ -70,6 +70,34 @@ final class AviaEventsIntegrationTest extends TestCase
         );
     }
 
+    public function testEnqueueCoursePickerScriptLoadsScriptOnPostEditScreen(): void
+    {
+        Functions\when('plugin_dir_url')->justReturn('https://site.test/wp-content/plugins/kmc-eversports/');
+        $scriptFile = dirname(__DIR__, 2) . '/assets/js/avia-course-picker.js';
+        Functions\expect('wp_enqueue_script')
+            ->once()
+            ->with(
+                AviaEventsIntegration::COURSE_PICKER_SCRIPT_HANDLE,
+                'https://site.test/wp-content/plugins/kmc-eversports/assets/js/avia-course-picker.js',
+                ['jquery'],
+                (string) filemtime($scriptFile),
+                true,
+            );
+
+        AviaEventsIntegration::enqueueCoursePickerScript('post.php');
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testEnqueueCoursePickerScriptSkipsOtherAdminScreens(): void
+    {
+        Functions\expect('wp_enqueue_script')->never();
+
+        AviaEventsIntegration::enqueueCoursePickerScript('index.php');
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testPopupElementsDoNotQueryEversportsOutsideTheEditWindowRequest(): void
     {
         Functions\expect('get_transient')->never();

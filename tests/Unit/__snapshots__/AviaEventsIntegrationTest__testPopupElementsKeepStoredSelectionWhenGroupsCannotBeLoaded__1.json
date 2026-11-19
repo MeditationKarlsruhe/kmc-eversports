@@ -20,6 +20,11 @@
         "std": ""
     },
     {
+        "id": "course_names",
+        "type": "hidden",
+        "std": ""
+    },
+    {
         "name": "Bilder anzeigen",
         "desc": "Kursbild über der Beschreibung anzeigen.",
         "id": "show_images",
