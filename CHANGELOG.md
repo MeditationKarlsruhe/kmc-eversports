@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Avia element course picker (`assets/js/avia-course-picker.js`, loaded on post edit screens): text filter above the course list that hides non-matching options without dropping hidden selections, and click-to-toggle selection (no Ctrl/Cmd needed). Selected course names are stored in a hidden `course_names` attribute and shown on the builder canvas one per line (separated by `|`, split again after each save via Enfold's `av-alb-canvas-updated` event), so the canvas names the courses without querying Eversports
 - `enfold/` is now part of the release ZIP
 
+### Changed
+
+- `EversportsClient::postGraphQL()` decodes each API response once and returns the decoded array; previously the body was decoded once for the GraphQL error check and again by the caller
+
 ## [2.1.0] - 2026-07-17
 
 ### Added

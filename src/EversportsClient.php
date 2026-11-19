@@ -99,7 +99,7 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode(self::postGraphQL(self::QUERY, $variables), true, 512, JSON_THROW_ON_ERROR);
+            $page = self::postGraphQL(self::QUERY, $variables);
             $activities = $page['data']['activities'];
             array_push($allNodes, ...$activities['nodes']);
             $hasNextPage = $activities['pageInfo']['hasNextPage'];
@@ -124,12 +124,7 @@ final class EversportsClient
              *     }
              * } $page
              */
-            $page = json_decode(
-                self::postGraphQL(self::GROUPS_QUERY, ['after' => $after]),
-                true,
-                512,
-                JSON_THROW_ON_ERROR,
-            );
+            $page = self::postGraphQL(self::GROUPS_QUERY, ['after' => $after]);
             $groups = $page['data']['activityGroups'];
             array_push($allNodes, ...$groups['nodes']);
             $hasNextPage = $groups['pageInfo']['hasNextPage'];
@@ -139,7 +134,7 @@ final class EversportsClient
     }
 
     /** @param array<string, mixed> $variables */
-    private static function postGraphQL(string $query, array $variables): string
+    private static function postGraphQL(string $query, array $variables): mixed
     {
         $response = wp_remote_post(self::ENDPOINT, [
             'headers' => [
@@ -162,15 +157,14 @@ final class EversportsClient
             throw new \RuntimeException("Eversports API returned HTTP {$statusCode}: {$rawBody}");
         }
 
-        $responseBody = wp_remote_retrieve_body($response);
-        self::assertNoGraphQLErrors($responseBody);
+        $decoded = json_decode(wp_remote_retrieve_body($response), true, 512, JSON_THROW_ON_ERROR);
+        self::assertNoGraphQLErrors($decoded);
 
-        return $responseBody;
+        return $decoded;
     }
 
-    private static function assertNoGraphQLErrors(string $responseBody): void
+    private static function assertNoGraphQLErrors(mixed $decoded): void
     {
-        $decoded = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
         $errors = is_array($decoded) ? ($decoded['errors'] ?? null) : null;
         if (is_array($errors)) {
             $messages = array_filter(array_column($errors, 'message'), 'is_string');
