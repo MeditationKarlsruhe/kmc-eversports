@@ -5,7 +5,7 @@ declare(strict_types=1);
 /** @var list<\Kmc\Eversports\ClassGroup> $groups */
 /** @var bool $showImage */
 ?>
-<div class="kmc-eversports-schedule">
+<div class="kmc-eversports-events">
     <?php foreach ($groups as $group) : ?>
         <div class="kmc-event-group">
             <?php if ($showImage && $group->imageUrl !== null) : ?>
