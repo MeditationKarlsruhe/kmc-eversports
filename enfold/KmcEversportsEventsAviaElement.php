@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Kmc\Eversports\AviaCanvasCourseNames;
 use Kmc\Eversports\AviaEventsIntegration;
 use Kmc\Eversports\Renderer;
 
@@ -26,7 +27,19 @@ final class KmcEversportsEventsAviaElement extends \aviaShortcodeTemplate
         $this->config['shortcode'] = AviaEventsIntegration::SHORTCODE;
         $this->config['tooltip'] = 'Zeigt den Kursplan ausgewählter Eversports-Kurse an';
         $this->config['preview'] = 'large';
-        $this->config['alb_items'] = ['value' => AviaEventsIntegration::COURSE_NAMES_FIELD];
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     * @return array<string, mixed>
+     */
+    public function editor_element($params): array
+    {
+        $args = is_array($params['args'] ?? null) ? $params['args'] : [];
+        $storedNames = $args[AviaEventsIntegration::COURSE_NAMES_FIELD] ?? '';
+        $params['innerHtml'] = AviaCanvasCourseNames::render(is_string($storedNames) ? $storedNames : '');
+
+        return $params;
     }
 
     protected function popup_elements(): void

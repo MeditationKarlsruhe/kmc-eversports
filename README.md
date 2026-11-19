@@ -139,7 +139,7 @@ Avia Layout Builder unter *Content Elements*. Damit braucht man keine IDs:
    Vorschau sofort das Ergebnis.
 3. **Bilder anzeigen** auf *Ja* oder *Nein* stellen, *Save*, Seite speichern.
 
-Im Builder zeigt das Element unter seinem Namen die gewählten Kurse an.
+Im Builder zeigt das Element unter seinem Namen die gewählten Kurse an, einen pro Zeile.
 
 Das Element speichert intern einen eigenen Shortcode (`[av_eversports_events course_groups='…'
 course_names='…' show_images='yes|no']`) und rendert genau wie Block und Shortcode.

@@ -7,6 +7,7 @@ namespace Kmc\Eversports\Tests\Unit;
 use Brain\Monkey;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
+use Kmc\Eversports\AviaCanvasCourseNames;
 use Kmc\Eversports\AviaEventsIntegration;
 use Kmc\Eversports\EversportsClient;
 use PHPUnit\Framework\TestCase;
@@ -47,6 +48,18 @@ final class KmcEversportsEventsAviaElementTest extends TestCase
         $element = $this->createElement();
 
         self::assertSame($expected, $element->elements);
+    }
+
+    public function testEditorElementShowsStoredCourseNamesOnCanvas(): void
+    {
+        $element = $this->createElement();
+
+        $result = $element->editor_element(['args' => ['course_names' => 'Arya Tara Puja | Yoga &amp; Ruhe']]);
+
+        self::assertSame(
+            AviaCanvasCourseNames::render('Arya Tara Puja | Yoga &amp; Ruhe'),
+            $result['innerHtml'],
+        );
     }
 
     public function testAdminAssetsRegisterCoursePickerScript(): void

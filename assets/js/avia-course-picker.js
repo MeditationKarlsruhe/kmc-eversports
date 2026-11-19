@@ -4,16 +4,35 @@
     var COURSE_SELECT = 'select[name="aviaTBcourse_groups"]';
     var COURSE_NAMES = 'input[name="aviaTBcourse_names"]';
     var FILTER_CLASS = 'kmc-eversports-course-filter';
+    var CANVAS_NAMES = '.kmc-eversports-course-names';
+    var SEPARATOR = '|';
 
     function courseName(option) {
-        return $.trim($(option).text()).replace(/[\[\]"<>]/g, '');
+        return $.trim($(option).text()).replace(/[\[\]"<>|]/g, '');
     }
 
     function storeCourseNames(select) {
         var names = $.map(select.find('option:selected'), courseName);
         var modal = select.closest('.avia-modal');
 
-        modal.find(COURSE_NAMES).val(names.join(', '));
+        modal.find(COURSE_NAMES).val(names.join(' ' + SEPARATOR + ' '));
+    }
+
+    function splitCanvasNames(container) {
+        var names = container.text().split(SEPARATOR);
+
+        if (container.children('.avia-element-item').length) {
+            return;
+        }
+
+        container.empty();
+        $.each(names, function (index, name) {
+            var trimmed = $.trim(name);
+
+            if (trimmed !== '') {
+                container.append($('<span class="avia-element-item"></span>').text(trimmed));
+            }
+        });
     }
 
     function filterOptions(select, term) {
@@ -76,6 +95,12 @@
     $(document).on('avia_modal_finished', function () {
         $('.avia-modal').find(COURSE_SELECT).each(function () {
             enhance($(this));
+        });
+    });
+
+    $(document).on('av-alb-canvas-updated', function (event) {
+        $(event.target).find(CANVAS_NAMES).each(function () {
+            splitCanvasNames($(this));
         });
     });
 
