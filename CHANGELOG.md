@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-11-20
+
 ### Fixed
 
 - Course groups were listed in the order the Eversports API returned them (grouped by recurrence series, not by start time), so e.g. an event on 29.11. could appear below one on 27.12. Groups are now sorted by their earliest appointment, and the appointments within a group by start time. `ActivityParser` sorts the activities by start (compared as `DateTimeImmutable`, so mixed UTC offsets around DST changes are ordered correctly) before grouping them; this applies to block, shortcode and Avia element alike (#71)
