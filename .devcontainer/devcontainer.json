@@ -7,6 +7,10 @@
 
   "runArgs": ["--privileged"],
 
+  "mounts": [
+    "source=D:/dotfiles,target=/dotfiles,type=bind,readonly"
+  ],
+
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts",
