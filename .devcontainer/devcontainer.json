@@ -18,7 +18,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
-  "postCreateCommand": "composer install && npm install",
+  "postCreateCommand": "composer install && npm ci",
 
   "customizations": {
     "vscode": {
