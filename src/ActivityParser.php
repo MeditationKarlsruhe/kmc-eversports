@@ -10,7 +10,22 @@ final class ActivityParser
     public static function parse(string $activitiesJson): array
     {
         $nodes = self::decodeNodes($activitiesJson);
-        return self::toClassGroups($nodes);
+        $sortedNodes = self::sortByStart($nodes);
+        return self::toClassGroups($sortedNodes);
+    }
+
+    /**
+     * @param  list<ActivityNode> $nodes
+     * @return list<ActivityNode>
+     */
+    private static function sortByStart(array $nodes): array
+    {
+        usort(
+            $nodes,
+            static fn (ActivityNode $a, ActivityNode $b): int =>
+                new \DateTimeImmutable($a->appointmentStart) <=> new \DateTimeImmutable($b->appointmentStart),
+        );
+        return $nodes;
     }
 
     /** @return list<ActivityNode> */

@@ -30,10 +30,62 @@ final class ActivityParserTest extends TestCase
         self::assertNotFalse($json);
 
         $groups = ActivityParser::parse($json);
+        $grundlagenprogramm = array_values(array_filter(
+            $groups,
+            static fn (ClassGroup $group): bool => $group->id === '1cd940d5-2585-432c-bbd8-fc556159b421',
+        ));
 
         $expectedUrl = 'https://files.eversports.com/f79b7bdb-1c2d-45ae-a60d-ceb5423ed045/'
             . 'eversports__bild-prasentation-43-11png-original.png';
-        self::assertSame($expectedUrl, $groups[0]->imageUrl);
+        self::assertSame($expectedUrl, $grundlagenprogramm[0]->imageUrl);
+    }
+
+    public function testItOrdersGroupsByTheirEarliestAppointment(): void
+    {
+        $json = $this->activitiesJson([
+            ['later-group', '2026-12-27T10:00:00+01:00'],
+            ['earlier-group', '2026-11-29T15:00:00+01:00'],
+            ['later-group', '2026-12-28T10:00:00+01:00'],
+        ]);
+
+        $groups = ActivityParser::parse($json);
+
+        self::assertSame(['earlier-group', 'later-group'], array_column($groups, 'id'));
+    }
+
+    public function testItOrdersAppointmentsWithinAGroupByStart(): void
+    {
+        $json = $this->activitiesJson([
+            ['challenge', '2027-01-11T08:00:00+01:00'],
+            ['challenge', '2027-01-12T08:00:00+01:00'],
+            ['challenge', '2027-01-11T18:00:00+01:00'],
+            ['challenge', '2027-01-12T18:00:00+01:00'],
+        ]);
+
+        $groups = ActivityParser::parse($json);
+        $starts = array_map(
+            static fn (Appointment $appointment): string => $appointment->start->format('c'),
+            $groups[0]->appointments,
+        );
+
+        self::assertSame([
+            '2027-01-11T08:00:00+01:00',
+            '2027-01-11T18:00:00+01:00',
+            '2027-01-12T08:00:00+01:00',
+            '2027-01-12T18:00:00+01:00',
+        ], $starts);
+    }
+
+    public function testItComparesStartTimesAcrossUtcOffsets(): void
+    {
+        $json = $this->activitiesJson([
+            ['local-later', '2026-10-25T02:30:00+01:00'],
+            ['local-earlier', '2026-10-25T02:45:00+02:00'],
+        ]);
+
+        $groups = ActivityParser::parse($json);
+
+        self::assertSame(['local-earlier', 'local-later'], array_column($groups, 'id'));
     }
 
     public function testItSetsImageUrlToNullWhenNoImagesArePresent(): void
@@ -68,6 +120,24 @@ final class ActivityParserTest extends TestCase
         $groups = ActivityParser::parse('{"data":{"activities":{"nodes":[]}}}');
 
         self::assertSame([], $groups);
+    }
+
+    /** @param list<array{0: string, 1: string}> $activities groupId and start of each activity */
+    private function activitiesJson(array $activities): string
+    {
+        $nodes = array_map(static fn (array $activity): array => [
+            'start' => $activity[1],
+            'end' => $activity[1],
+            'detailsPageURL' => null,
+            'activityGroup' => [
+                'id' => $activity[0],
+                'name' => $activity[0],
+                'description' => ['html' => ''],
+                'images' => ['nodes' => []],
+            ],
+        ], $activities);
+
+        return json_encode(['data' => ['activities' => ['nodes' => $nodes]]], JSON_THROW_ON_ERROR);
     }
 
     /**
