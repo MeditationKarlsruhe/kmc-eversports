@@ -15,10 +15,11 @@
   },
 
   "mounts": [
-    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-wp-env,target=/home/vscode/.wp-env,type=volume"
   ],
 
-  "postCreateCommand": "sudo chown vscode:vscode node_modules && composer install && npm ci",
+  "postCreateCommand": "sudo chown vscode:vscode node_modules /home/vscode/.wp-env && composer install && npm ci",
 
   "customizations": {
     "vscode": {
