@@ -76,7 +76,8 @@ Geheimnis und gehört **niemals ins Repository**.
   und wird nie eingecheckt).
 - Endpoint: `https://provider-api.eversportsmanager.io/api/graphql`,
   Authentifizierung per Header `Authorization: Bearer <token>`.
-- Den Token bekommt man in den API-Einstellungen des Eversports-Studio-Accounts.
+- Den Token stellt Eversports aus. Ist er ungültig, funktioniert nicht mehr oder ist verloren
+  gegangen, muss bei Eversports ein neuer Token beantragt werden.
 
 ---
 
