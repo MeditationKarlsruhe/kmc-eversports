@@ -7,10 +7,6 @@
 
   "runArgs": ["--privileged"],
 
-  "mounts": [
-    "source=D:/dotfiles,target=/dotfiles,type=bind,readonly"
-  ],
-
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
@@ -18,7 +14,12 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
-  "postCreateCommand": "composer install && npm ci",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-wp-env,target=/home/vscode/.wp-env,type=volume"
+  ],
+
+  "postCreateCommand": "sudo chown vscode:vscode node_modules /home/vscode/.wp-env && composer install && npm ci",
 
   "customizations": {
     "vscode": {
