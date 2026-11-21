@@ -194,7 +194,7 @@ gewünschte Seite im Browser aufrufen. Xdebug hört auf Port 9003.
 
 ### Cache invalidieren
 
-Der `EversportsClient` legt API-Antworten für **1 Stunde** als WordPress-Transient zwischen.
+Der `EversportsClient` legt API-Antworten als WordPress-Transient zwischen.
 
 **Entwickler (WP-CLI im Container-Terminal):**
 ```bash
@@ -202,7 +202,7 @@ npx wp-env run cli wp transient delete --all
 ```
 
 **Im WordPress-Admin:** *Einstellungen → KMC Eversports → „Cache leeren"*. Ohne Zutun läuft
-der Cache nach 1 Stunde automatisch ab.
+der Cache automatisch ab.
 
 ---
 
