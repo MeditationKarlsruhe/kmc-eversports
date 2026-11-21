@@ -14,7 +14,11 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
-  "postCreateCommand": "composer install && npm ci",
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+
+  "postCreateCommand": "sudo chown vscode:vscode node_modules && composer install && npm ci",
 
   "customizations": {
     "vscode": {
