@@ -1,50 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working in this directory.
-It supersedes the CLAUDE.md one level up (`D:\KMC\CLAUDE.md`), which describes the old architecture and is no longer accurate.
-
-## Project
-
-WordPress plugin for Kadampa Meditationszentrum (KMC) Karlsruhe — displays Eversports class schedules via the official Eversports GraphQL API. No C# server, no Azure Function, no scraping.
+WordPress plugin for Kadampa Meditationszentrum (KMC) Karlsruhe that displays Eversports class schedules via the official Eversports GraphQL API.
 
 ## Commands
 
-All commands run inside the Dev Container terminal (no local PHP).
-
-```bash
-composer install    # install PHP dependencies
-composer test       # PHPUnit
-composer stan       # PHPStan static analysis (max level)
-composer cs         # check PSR-12 coding standard
-composer cs:fix     # auto-fix formatting
-
-npm start           # start local WordPress via wp-env (port 8888)
-npm run debug       # start with Xdebug (port 9003)
-npm run clean       # destroy Docker volumes (resets local WordPress)
-```
-
-## Architecture
-
-```
-Eversports GraphQL API
-        │   (HTTPS, Bearer Token — .secrets/eversports-api.txt, never commit)
-        ▼
-EversportsClient  →  WP Transient cache (1h TTL)
-        │
-        ▼
-ActivityParser  →  ClassGroup[]  →  kmc/eversports-events block  →  HTML
-```
-
-**Entry point:** `kmc-eversports.php`
-
-**`src/`:**
-- `EversportsClient` — paginates GraphQL (≤50 per request, 52 weeks), caches via WP Transient
-- `ActivityParser` — raw API response → typed `ClassGroup` objects; uses `@var` shape annotations, no runtime defensive checks
-- `ActivityNode` — intermediate flat type from raw API rows
-- `ClassGroup` — title, description, image, `Appointment[]`
-- `Appointment` — start, end, nullable `detailsPageURL`
-
-**`tests/Unit/`:** PHPUnit + Brain\Monkey (WP mocks) + Spatie snapshot assertions.
+There is no local PHP: all `composer` and `npm` scripts (see `composer.json`, `package.json`) run inside the Dev Container terminal.
 
 ## Testing Policy
 
@@ -60,27 +20,7 @@ Verification is limited to the automated checks: `composer test`, `composer stan
 
 ## Dev Container
 
-PHP 8.3. Container name changes on rebuild — find it with:
+The container name changes on rebuild — find it with:
 ```bash
 docker ps --format "{{.Names}} {{.Image}}" | grep php
 ```
-
-## Worktrees
-
-This repo is edited both from the Windows host and from inside the Dev Container (different mount roots: `D:\KMC\kmc-eversports\...` vs. `/workspaces/kmc-eversports/...`). `git worktree add` writes an absolute gitdir path by default, which only resolves in the environment it was created from — a worktree created from the host won't be recognized as a repo when opened from the container, and vice versa.
-
-Always create worktrees with `--relative-paths` (or rely on the repo-local `worktree.useRelativePaths = true` config, already set), so the `.git` pointer file is relative and resolves from either environment:
-
-```bash
-git worktree add --relative-paths .claude/worktrees/<name> <branch>
-```
-
-## Roadmap
-
-- ✅ Dev environment (PHP + Node Dev Container, wp-env with Xdebug)
-- ✅ API integration (`EversportsClient`, `ActivityParser`, Shortcode outputting real data)
-- HTML template + CSS — styled output
-- ✅ CI (GitHub Actions) — tests, static analysis, coding standard; coverage ≥ 90 %
-- ✅ CD (GitHub Actions) — tag-triggered plugin ZIP + GitHub Release, auto-update notifications via Plugin Update Checker
-- Admin settings page — token management + "clear cache" button
-- Cutover — retire old plugin + scraper + Azure Function
