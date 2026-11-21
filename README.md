@@ -19,7 +19,7 @@ Eversports' Schutzmechanismus (Cloudflare) blockiert. Der Neubau ersetzt das dur
 Eversports GraphQL-API
         │   (HTTPS, Bearer-Token)
         ▼
-EversportsClient  →  JSON (gecacht, 1h TTL)
+EversportsClient  →  JSON (gecacht)
         │
         ▼
 ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block / Shortcode → HTML
