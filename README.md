@@ -22,15 +22,17 @@ Eversports GraphQL-API
 EversportsClient  →  JSON (gecacht)
         │
         ▼
-ActivityParser   →   ClassGroup-Objekte   →   Gutenberg-Block / Shortcode → HTML
+ActivityParser   →   ClassGroup-Objekte   →   Avia-Element / Gutenberg-Block / Shortcode → HTML
 ```
 
 - `EversportsClient` holt alle Termine der nächsten 52 Wochen (paginiert, max. 50 pro
   Request) und legt das Ergebnis als WordPress-Transient für 1 Stunde zwischen.
 - `ActivityParser` wandelt die API-Antwort in typisierte `ClassGroup`-Objekte um.
 - Der Gutenberg-Block „Eversports Events" (`kmc/eversports-events`) rendert die Gruppen als HTML.
-- Für Seiten ohne Block-Editor (z. B. mit dem Avia Layout Builder von Enfold) gibt es dieselbe
-  Ausgabe als Shortcode `[kmc-eversports-events]` (siehe [Shortcode](#shortcode)).
+- Auf Seiten, die mit dem Avia Layout Builder von Enfold gebaut sind (wie auf der Live-Seite),
+  liefert das [Avia-Element](#avia-layout-builder-element-enfold) „Eversports Events" dieselbe
+  Ausgabe. Für alle anderen Fälle gibt es den Shortcode `[kmc-eversports-events]` (siehe
+  [Shortcode](#shortcode)).
 
 ---
 
@@ -41,7 +43,7 @@ denn die gesamte Entwicklungsumgebung steckt in einem Container:
 
 | Werkzeug | Wozu |
 |---|---|
-| [Docker Desktop](https://www.docker.com/products/docker-docker-desktop/) | führt den Entwicklungs-Container aus (muss laufen) |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | führt den Entwicklungs-Container aus (muss laufen) |
 | [Visual Studio Code](https://code.visualstudio.com/) | der Editor |
 | VS-Code-Extension **„Dev Containers"** (`ms-vscode-remote.remote-containers`) | öffnet das Projekt im Container |
 
@@ -54,7 +56,7 @@ für die Versionsverwaltung.
 2. VS Code erkennt die Container-Definition und schlägt unten rechts **„Reopen in
    Container"** vor — anklicken. (Alternativ: `F1` → *„Dev Containers: Reopen in
    Container"*.) Beim ersten Mal lädt Docker das Image und baut den Container; das dauert
-   ein paar Minuten. `composer install` und `npm install` laufen dabei automatisch.
+   ein paar Minuten. `composer install` und `npm ci` laufen dabei automatisch.
 3. Prüfen, dass alles läuft:
    ```bash
    composer test    # Tests
@@ -227,10 +229,11 @@ committet und taggt lokal — und fragt vor jedem der beiden folgenreichen Schri
 leer ist, `main` nicht sauber/synchron ist, oder die eingegebene Version ungültig ist.
 
 Der finale Tag-Push löst `.github/workflows/release.yml` aus: baut das Plugin (Composer +
-npm), verpackt die Laufzeitdateien als ZIP, extrahiert den passenden Abschnitt aus
-`CHANGELOG.md` als Release-Beschreibung und veröffentlicht ein GitHub Release mit dem ZIP als
-Anhang. Weicht die Tag-Nummer vom `Version:`-Header ab, bricht der Workflow ab, statt ein
-falsch versioniertes Release zu erzeugen.
+npm) und das [Handbuch-PDF](#betriebs--und-recovery-handbuch), verpackt die Laufzeitdateien
+samt PDF als ZIP, extrahiert den passenden Abschnitt aus `CHANGELOG.md` als
+Release-Beschreibung und veröffentlicht ein GitHub Release mit dem ZIP als Anhang. Weicht die
+Tag-Nummer vom `Version:`-Header ab, bricht der Workflow ab, statt ein falsch versioniertes
+Release zu erzeugen. Auch ein fehlgeschlagener PDF-Bau verhindert das Release.
 
 **Erstinstallation** (frisches WordPress): ZIP vom GitHub Release herunterladen, dann
 *wp-admin → Plugins → Installieren → Datei hochladen*.
