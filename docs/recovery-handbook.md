@@ -76,8 +76,8 @@ Mit aktiviertem `WP_DEBUG` steht die Meldung zusätzlich als HTML-Kommentar im S
 
 Den Eversports-API-Token stellt Eversports aus. Er wird in WordPress unter *Einstellungen → KMC
 Eversports* eingetragen und gibt dem Plugin Zugriff auf die Kursdaten. Nach dem Speichern zeigt
-die Einstellungsseite den Wert nicht mehr an. Der Token ist geheim und gehört nicht in dieses
-öffentliche Repository. Ist er ungültig oder verloren, gilt Szenario 2.
+die Einstellungsseite den Wert nicht mehr an. Ist der Token ungültig oder verloren, gilt
+Szenario 2.
 
 ### Quellcode und Auslieferung
 
@@ -92,6 +92,9 @@ die Einstellungsseite den Wert nicht mehr an. Der Token ist geheim und gehört n
   <https://github.com/MeditationKarlsruhe/kmc-eversports/releases>
 - Updates: Das Plugin fragt selbst bei GitHub nach neuen Releases. Neue Versionen erscheinen in
   WordPress unter *Dashboard → Aktualisierungen* wie bei jedem anderen Plugin.
+- Dieses Handbuch: Als PDF liegt es dem Plugin bei und ist unter *Einstellungen → KMC Eversports*
+  verlinkt. Die jeweils neueste Fassung steht auf GitHub, auch wenn die Website nicht erreichbar
+  ist: <https://github.com/MeditationKarlsruhe/kmc-eversports/blob/main/docs/recovery-handbook.md>
 
 ### Wiederherstellungsszenarien
 
