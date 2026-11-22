@@ -47,7 +47,7 @@ ausgewählt, wird auf der Website aber nicht mehr angezeigt. Er kann einfach abg
 |---|---|
 | Eine Änderung aus Eversports fehlt nach über einer Stunde noch | Im WordPress-Admin *Einstellungen → KMC Eversports* → „Cache leeren" klicken. Danach im WP-Optimize-Menü den Seiten-Cache leeren und die Seite neu laden. |
 | Die Kursliste ist auf einer Seite komplett leer | Erst „Cache leeren" wie oben versuchen. Das Plugin zeigt bei Fehlern absichtlich nichts an anstatt einer Fehlermeldung, das muss im Code überprüft werden. |
-| Im Editor erscheint beim Element ein roter Hinweis „Kursliste nicht ladbar" | Möglicherweise ist der Eversports-Zugang (API-Token) abgelaufen oder ungültig. Aktuelles Token bei Eversports erfragen und in *Einstellungen → KMC Eversports → Eversports API-Token* eintragen (siehe [API-Token](api-token.md)). Die bestehende Kursauswahl bleibt beim Speichern erhalten. |
+| Im Editor erscheint beim Element ein roter Hinweis „Kursliste nicht ladbar" | Möglicherweise ist der Eversports-Zugang (API-Token) abgelaufen oder ungültig. Aktuelles Token bei Eversports erfragen und in *Einstellungen → KMC Eversports → Eversports API-Token* eintragen. Die bestehende Kursauswahl bleibt beim Speichern erhalten. |
 | Das Element „Eversports Events" fehlt im Layout Builder | Das kann nach einem Update des Themes Enfold vorkommen und benötigt eine Anpassung des Plugins. |
 
 ---
@@ -61,7 +61,7 @@ offizielle Eversports-GraphQL-API.
 
 | Baustein | Aufgabe |
 |---|---|
-| Eversports-API | `https://provider-api.eversportsmanager.io/api/graphql`, Authentifizierung per Header `Authorization: Bearer <Token>` (siehe [API-Token](api-token.md)) |
+| Eversports-API | `https://provider-api.eversportsmanager.io/api/graphql`, Authentifizierung per Header `Authorization: Bearer <Token>` (siehe [API-Token](#api-token)) |
 | `EversportsClient` | holt alle Termine der nächsten 52 Wochen (max. 50 pro Anfrage) und die Kursgruppen; speichert die Antworten 1 Stunde als WordPress-Transient |
 | `ActivityParser` | wandelt die API-Antwort in Kursgruppen mit Terminen um |
 | Ausgabe | Avia-Element „Eversports Events" (Enfold), Gutenberg-Block „Eversports Events" und Shortcode `[kmc-eversports-events]` – alle drei erzeugen dieselbe HTML-Ausgabe |
@@ -71,6 +71,13 @@ offizielle Eversports-GraphQL-API.
 Bei einem Fehler (z. B. Token ungültig, API nicht erreichbar) rendert das Plugin nichts und
 schreibt die Ursache mit dem Präfix `KMC Eversports:` ins PHP-Fehlerprotokoll des Webhostings.
 Mit aktiviertem `WP_DEBUG` steht die Meldung zusätzlich als HTML-Kommentar im Seitenquelltext.
+
+### API-Token
+
+Den Eversports-API-Token stellt Eversports aus. Er wird in WordPress unter *Einstellungen → KMC
+Eversports* eingetragen und gibt dem Plugin Zugriff auf die Kursdaten. Nach dem Speichern zeigt
+die Einstellungsseite den Wert nicht mehr an. Der Token ist geheim und gehört nicht in dieses
+öffentliche Repository. Ist er ungültig oder verloren, gilt Szenario 2.
 
 ### Quellcode und Auslieferung
 
@@ -94,8 +101,8 @@ Mit aktiviertem `WP_DEBUG` steht die Meldung zusätzlich als HTML-Kommentar im S
    (*Latest*) die Datei `kmc-eversports.zip` herunterladen. Dafür ist kein Login nötig.
 2. WordPress-Admin: *Plugins → Installieren → Plugin hochladen*, ZIP auswählen, installieren,
    aktivieren. Ist das Plugin noch vorhanden, bietet WordPress an, es zu ersetzen.
-3. *Einstellungen → KMC Eversports*: Ist kein Token gespeichert, einen neuen API-Token bei
-   Eversports beantragen (siehe [API-Token](api-token.md)), eintragen und speichern.
+3. *Einstellungen → KMC Eversports*: Ist kein Token gespeichert, den
+   [API-Token](#api-token) eintragen und speichern.
 4. „Cache leeren" klicken, dann eine Kursplan-Seite aufrufen und mit Eversports vergleichen.
 
 Die Kursauswahl auf den Seiten steckt in den Seiteninhalten, nicht im Plugin. Sie bleibt beim
@@ -106,7 +113,7 @@ Neuinstallieren erhalten.
 Erkennbar an leeren Kurslisten und dem roten Hinweis „Kursliste nicht ladbar" im Editor.
 
 1. Im Zweifel (Token ungültig, funktioniert nicht oder verloren) bei Eversports melden und einen
-   neuen Token ausstellen lassen (siehe [API-Token](api-token.md)).
+   neuen Token ausstellen lassen.
 2. WordPress-Admin: *Einstellungen → KMC Eversports*, neuen Token eintragen, *Speichern*, dann
    Cache leeren.
 
