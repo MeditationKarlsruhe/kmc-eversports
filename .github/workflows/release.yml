@@ -50,10 +50,13 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - uses: ./.github/actions/build-handbook
+
       - name: Assemble plugin directory
         run: |
-          mkdir -p dist/kmc-eversports
+          mkdir -p dist/kmc-eversports/docs
           cp -r src enfold vendor build templates assets kmc-eversports.php block.json dist/kmc-eversports/
+          cp docs/recovery-handbook.pdf dist/kmc-eversports/docs/
 
       - name: Build ZIP
         working-directory: dist

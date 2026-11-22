@@ -1,0 +1,16 @@
+name: Build Handbook
+description: Builds docs/recovery-handbook.pdf from docs/recovery-handbook.md
+
+runs:
+  using: composite
+  steps:
+    - name: Install pandoc, WeasyPrint and fonts
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends \
+          pandoc weasyprint fonts-crosextra-carlito fonts-dejavu-core
+
+    - name: Build PDF
+      shell: bash
+      run: bash docs/build-handbook-pdf.sh

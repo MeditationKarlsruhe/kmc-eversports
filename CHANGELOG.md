@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Operations and recovery handbook as PDF in the plugin ZIP (`docs/recovery-handbook.pdf`), linked on *Einstellungen → KMC Eversports*. The release workflow builds it from `docs/recovery-handbook.md` with pandoc and WeasyPrint and inserts the plugin version from the `Version:` header; the `Handbook` workflow builds it for every change to the handbook and keeps the PDF as a workflow artifact
+
 ## [2.2.2] - 2026-11-20
 
 ### Fixed

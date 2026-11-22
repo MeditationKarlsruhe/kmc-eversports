@@ -239,6 +239,21 @@ falsch versioniertes Release zu erzeugen.
 *wp-admin → Dashboard → Aktualisierungen*, sobald ein neues Release existiert — kein erneuter
 manueller Download nötig.
 
+## Betriebs- und Recovery-Handbuch
+
+Das [Handbuch](docs/recovery-handbook.md) beschreibt Bedienung, Betrieb und Wiederherstellung.
+Daraus baut [`docs/build-handbook-pdf.sh`](docs/build-handbook-pdf.sh) mit pandoc und WeasyPrint
+ein PDF. Das passiert automatisch:
+
+- **Beim Release** legt `release.yml` das PDF ins Plugin-ZIP. Die Seite *Einstellungen → KMC
+  Eversports* verlinkt es.
+- **Bei jeder Änderung unter `docs/`** baut der Workflow `handbook.yml` es zur Kontrolle. Das PDF
+  hängt am Workflow-Lauf unter *Artifacts*.
+
+Das PDF selbst wird nicht eingecheckt. Das Layout steht in `docs/handbook.css`, Links und
+Spaltenbreiten passt `docs/handbook.lua` an. Die Plugin-Version setzt der Bau aus dem
+`Version:`-Header in `kmc-eversports.php` ein, im Markdown steht sie deshalb nicht.
+
 ## Projektstruktur
 
 ```
@@ -257,6 +272,7 @@ enfold/                      Wird nur von Enfold geladen (Filter avia_load_short
 stubs/enfold.php             Platzhalter der Enfold-Klassen für PHPStan und Tests (Enfold ist nicht in CI)
 tests/
   Unit/ActivityParserTest.php  Tests für den Parser, gegen eine echte Beispiel-Antwort
+docs/                        Betriebs- und Recovery-Handbuch + Skript für die PDF-Version
 spike/                       Erkundung der API: Notizen + gespeicherte echte Antworten
   FINDINGS.md                  Was beim API-Test herauskam (Schema, Felder, Entscheidungen)
   sample-activities.json       Echte API-Antwort — dient als Test-Vorlage (Fixture)

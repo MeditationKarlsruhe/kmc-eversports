@@ -1,6 +1,6 @@
 # KMC Eversports – Betriebs- und Recovery-Handbuch
 
-Stand: November 2026 · Plugin-Version 2.2.2
+Stand: November 2026
 
 Dieses Dokument beschreibt, wie die Kurse aus Eversports auf die Website
 <https://meditation-karlsruhe.de/> kommen, und was zu tun ist, wenn dabei etwas nicht
@@ -65,7 +65,7 @@ offizielle Eversports-GraphQL-API.
 | `EversportsClient` | holt alle Termine der nächsten 52 Wochen (max. 50 pro Anfrage) und die Kursgruppen; speichert die Antworten 1 Stunde als WordPress-Transient |
 | `ActivityParser` | wandelt die API-Antwort in Kursgruppen mit Terminen um |
 | Ausgabe | Avia-Element „Eversports Events" (Enfold), Gutenberg-Block „Eversports Events" und Shortcode `[kmc-eversports-events]` – alle drei erzeugen dieselbe HTML-Ausgabe |
-| Einstellungsseite | *Einstellungen → KMC Eversports*: API-Token eintragen, Cache leeren |
+| Einstellungsseite | *Einstellungen → KMC Eversports*: API-Token eintragen, Cache leeren, Handbuch öffnen |
 | REST-Endpunkt | `/wp-json/kmc-eversports/v1/groups` listet alle aktiven Kursgruppen mit ID und Name (öffentlich lesbar) |
 
 Bei einem Fehler (z. B. Token ungültig, API nicht erreichbar) rendert das Plugin nichts und

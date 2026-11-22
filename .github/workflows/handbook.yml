@@ -1,0 +1,31 @@
+name: Handbook
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/actions/build-handbook/**'
+      - '.github/workflows/handbook.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/actions/build-handbook/**'
+      - '.github/workflows/handbook.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  handbook:
+    name: Build Handbook PDF
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-handbook
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-handbook
+          path: docs/recovery-handbook.pdf
+          if-no-files-found: error
