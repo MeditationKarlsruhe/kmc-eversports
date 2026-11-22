@@ -69,13 +69,11 @@ für die Versionsverwaltung.
 > **Wichtig:** Alle Befehle laufen **im Container-Terminal** von VS Code, nicht in einem
 > normalen Windows-Terminal.
 
-## API-Zugang (Geheimnis)
+## API-Zugang
 
-Der Zugriff auf die Eversports-API braucht einen **Studio-API-Token**. Dieser ist ein
-Geheimnis und gehört **niemals ins Repository**.
+Der Zugriff auf die Eversports-API braucht einen **Studio-API-Token**.
 
-- Ablage: Datei `.secrets/eversports-api.txt` (der Ordner `.secrets/` ist in `.gitignore`
-  und wird nie eingecheckt).
+- Ablage: Datei `.secrets/eversports-api.txt` (der Ordner `.secrets/` ist in `.gitignore`).
 - Endpoint: `https://provider-api.eversportsmanager.io/api/graphql`,
   Authentifizierung per Header `Authorization: Bearer <token>`.
 - Den Token stellt Eversports aus. Ist er ungültig, funktioniert nicht mehr oder ist verloren
