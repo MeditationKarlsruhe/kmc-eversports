@@ -15,6 +15,7 @@ final class AdminPageTest extends TestCase
     {
         parent::setUp();
         Monkey\setUp();
+        Functions\when('plugin_dir_path')->justReturn(__DIR__ . '/');
     }
 
     protected function tearDown(): void
@@ -117,5 +118,46 @@ final class AdminPageTest extends TestCase
         $output = (string) ob_get_clean();
 
         self::assertStringContainsString('Token ist gespeichert', $output);
+    }
+
+    public function testRenderPageLinksHandbookWhenPdfIsBundled(): void
+    {
+        $pluginDir = sys_get_temp_dir() . '/kmc-eversports-' . uniqid() . '/';
+        mkdir($pluginDir . 'docs', recursive: true);
+        touch($pluginDir . 'docs/recovery-handbook.pdf');
+
+        Functions\when('current_user_can')->justReturn(true);
+        Functions\when('get_option')->justReturn('');
+        Functions\when('admin_url')->justReturn('http://example.com/wp-admin/admin-post.php');
+        Functions\when('wp_nonce_field')->justReturn('');
+        Functions\when('plugin_dir_path')->justReturn($pluginDir);
+        Functions\when('plugin_dir_url')->justReturn('http://example.com/wp-content/plugins/kmc-eversports/');
+
+        ob_start();
+        AdminPage::renderPage();
+        $output = (string) ob_get_clean();
+
+        unlink($pluginDir . 'docs/recovery-handbook.pdf');
+        rmdir($pluginDir . 'docs');
+        rmdir($pluginDir);
+
+        self::assertStringContainsString(
+            'href="http://example.com/wp-content/plugins/kmc-eversports/docs/recovery-handbook.pdf"',
+            $output,
+        );
+    }
+
+    public function testRenderPageOmitsHandbookWhenPdfIsMissing(): void
+    {
+        Functions\when('current_user_can')->justReturn(true);
+        Functions\when('get_option')->justReturn('');
+        Functions\when('admin_url')->justReturn('http://example.com/wp-admin/admin-post.php');
+        Functions\when('wp_nonce_field')->justReturn('');
+
+        ob_start();
+        AdminPage::renderPage();
+        $output = (string) ob_get_clean();
+
+        self::assertStringNotContainsString('Handbuch', $output);
     }
 }

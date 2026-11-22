@@ -9,6 +9,8 @@ final class AdminPage
     private const NONCE_SAVE  = 'kmc_eversports_save';
     private const NONCE_CLEAR = 'kmc_eversports_clear_cache';
 
+    private const HANDBOOK_PATH = 'docs/recovery-handbook.pdf';
+
     public static function register(): void
     {
         add_action('admin_menu', [self::class, 'addMenuPage']);
@@ -36,6 +38,8 @@ final class AdminPage
         $raw      = get_option(EversportsClient::OPTION_TOKEN, '');
         $token    = is_string($raw) ? $raw : '';
         $hasToken = $token !== '';
+
+        $handbookUrl = self::handbookUrl();
 
         ?>
         <div class="wrap">
@@ -83,8 +87,28 @@ final class AdminPage
                 <p>Löscht die zwischengespeicherten Eversports-Daten sofort.</p>
                 <p><input type="submit" class="button" value="Cache leeren"></p>
             </form>
+
+            <?php if ($handbookUrl !== null) : ?>
+                <h2>Handbuch</h2>
+                <p>Bedienung, Fehlersuche und Wiederherstellung des Plugins.</p>
+                <p>
+                    <a class="button" href="<?php echo esc_url($handbookUrl); ?>" target="_blank" rel="noopener">
+                        Handbuch öffnen (PDF)
+                    </a>
+                </p>
+            <?php endif; ?>
         </div>
         <?php
+    }
+
+    /** The PDF is built for releases only, so a development checkout usually has none. */
+    private static function handbookUrl(): ?string
+    {
+        $pluginFile = dirname(__DIR__) . '/kmc-eversports.php';
+
+        return is_file(plugin_dir_path($pluginFile) . self::HANDBOOK_PATH)
+            ? plugin_dir_url($pluginFile) . self::HANDBOOK_PATH
+            : null;
     }
 
     /** @SuppressWarnings(PHPMD.ExitExpression) */
